@@ -1,33 +1,112 @@
 /* ==========================================================================
    PROJECT NEPTUNE: SOVEREIGN CIVIC DESIGN SYSTEM & DESIGN TOKENS
-   Theme: Obsidian Sovereign Dark & Ultra-Contrast Sunlight Mode
+   Default: Clean Daylight Civic Theme (Stripe/Gov.uk/Linear Precision)
+   Optional: Obsidian Sovereign Dark Theme
    ========================================================================== */
 
 :root {
-  /* Surface Color Palette (Obsidian Sovereign Dark) */
+  /* Surface Color Palette (Clean Daylight - High Trust Civic) */
+  --neptune-bg-base: #f8fafc;
+  --neptune-bg-surface: #ffffff;
+  --neptune-bg-card: #ffffff;
+  --neptune-bg-card-hover: #f8fafc;
+  --neptune-bg-elevated: #f1f5f9;
+  --neptune-bg-glass: rgba(255, 255, 255, 0.92);
+  --neptune-bg-glass-active: rgba(241, 245, 249, 0.95);
+  
+  /* Borders - Subtle, calm, elegant slate */
+  --neptune-border-subtle: #f1f5f9;
+  --neptune-border-card: #e2e8f0;
+  --neptune-border-hover: #cbd5e1;
+  --neptune-border-active: #059669;
+  --neptune-border-gold: rgba(217, 119, 6, 0.3);
+
+  /* Text & Contrast Hierarchy (WCAG AAA compliant) */
+  --neptune-text-primary: #0f172a;
+  --neptune-text-secondary: #475569;
+  --neptune-text-tertiary: #64748b;
+  --neptune-text-muted: #94a3b8;
+  --neptune-text-inverse: #ffffff;
+
+  /* Civic Accents */
+  --neptune-emerald: #059669;
+  --neptune-emerald-glow: rgba(5, 150, 105, 0.16);
+  --neptune-emerald-light: #10b981;
+  --neptune-emerald-dark: #047857;
+
+  --neptune-amber: #d97706;
+  --neptune-amber-glow: rgba(217, 119, 6, 0.16);
+  --neptune-amber-light: #f59e0b;
+
+  --neptune-crimson: #dc2626;
+  --neptune-crimson-glow: rgba(220, 38, 38, 0.16);
+  --neptune-crimson-light: #ef4444;
+
+  --neptune-cobalt: #2563eb;
+  --neptune-cobalt-glow: rgba(37, 99, 235, 0.16);
+  --neptune-cobalt-light: #3b82f6;
+  --neptune-cyan: #0891b2;
+  --neptune-purple: #7c3aed;
+
+  /* Adaptive Badge Tokens */
+  --neptune-badge-emerald-bg: #ecfdf5;
+  --neptune-badge-emerald-text: #047857;
+  --neptune-badge-emerald-border: #a7f3d0;
+
+  --neptune-badge-amber-bg: #fffbeb;
+  --neptune-badge-amber-text: #b45309;
+  --neptune-badge-amber-border: #fde68a;
+
+  --neptune-badge-crimson-bg: #fef2f2;
+  --neptune-badge-crimson-text: #b91c1c;
+  --neptune-badge-crimson-border: #fecaca;
+
+  --neptune-badge-cobalt-bg: #eff6ff;
+  --neptune-badge-cobalt-text: #1d4ed8;
+  --neptune-badge-cobalt-border: #bfdbfe;
+
+  /* Typography Stacks */
+  --neptune-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --neptune-font-indic: 'Noto Sans Devanagari', 'Plus Jakarta Sans', sans-serif;
+  --neptune-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Elevation & Shadows */
+  --neptune-shadow-sm: 0 1px 3px 0 rgba(0, 0, 0, 0.05), 0 1px 2px -1px rgba(0, 0, 0, 0.05);
+  --neptune-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --neptune-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.04);
+  --neptune-shadow-emerald: 0 4px 14px -2px rgba(16, 185, 129, 0.25);
+  --neptune-shadow-amber: 0 4px 14px -2px rgba(245, 158, 11, 0.25);
+  --neptune-shadow-crimson: 0 4px 14px -2px rgba(239, 68, 68, 0.25);
+
+  /* Transitions & Animation Curves */
+  --neptune-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --neptune-transition-slow: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   DARK OBSIDIAN MODE (Activated via header toggle)
+   -------------------------------------------------------------------------- */
+[data-theme="dark"] {
   --neptune-bg-base: #07090e;
   --neptune-bg-surface: #0b0f19;
   --neptune-bg-card: #0f172a;
   --neptune-bg-card-hover: #162038;
   --neptune-bg-elevated: #1e293b;
-  --neptune-bg-glass: rgba(15, 23, 42, 0.82);
-  --neptune-bg-glass-active: rgba(30, 41, 59, 0.90);
-  
-  /* Borders */
+  --neptune-bg-glass: rgba(15, 23, 42, 0.88);
+  --neptune-bg-glass-active: rgba(30, 41, 59, 0.92);
+
   --neptune-border-subtle: rgba(51, 65, 85, 0.4);
   --neptune-border-card: #1e293b;
   --neptune-border-hover: #334155;
   --neptune-border-active: #10b981;
   --neptune-border-gold: rgba(245, 158, 11, 0.4);
 
-  /* Text & Contrast Hierarchy (WCAG AAA compliant) */
   --neptune-text-primary: #f8fafc;
   --neptune-text-secondary: #94a3b8;
   --neptune-text-tertiary: #64748b;
   --neptune-text-muted: #475569;
   --neptune-text-inverse: #07090e;
 
-  /* Quasi-Judicial Statutory State Accents */
   --neptune-emerald: #10b981;
   --neptune-emerald-glow: rgba(16, 185, 129, 0.22);
   --neptune-emerald-light: #34d399;
@@ -43,61 +122,29 @@
 
   --neptune-cobalt: #3b82f6;
   --neptune-cobalt-glow: rgba(59, 130, 246, 0.22);
+  --neptune-cobalt-light: #60a5fa;
   --neptune-cyan: #06b6d4;
   --neptune-purple: #8b5cf6;
 
-  /* Typography Stacks */
-  --neptune-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  --neptune-font-indic: 'Noto Sans Devanagari', 'Plus Jakarta Sans', sans-serif;
-  --neptune-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --neptune-badge-emerald-bg: rgba(16, 185, 129, 0.14);
+  --neptune-badge-emerald-text: #34d399;
+  --neptune-badge-emerald-border: rgba(16, 185, 129, 0.3);
 
-  /* Elevation & Shadows */
+  --neptune-badge-amber-bg: rgba(245, 158, 11, 0.14);
+  --neptune-badge-amber-text: #fbbf24;
+  --neptune-badge-amber-border: rgba(245, 158, 11, 0.3);
+
+  --neptune-badge-crimson-bg: rgba(239, 68, 68, 0.14);
+  --neptune-badge-crimson-text: #f87171;
+  --neptune-badge-crimson-border: rgba(239, 68, 68, 0.3);
+
+  --neptune-badge-cobalt-bg: rgba(59, 130, 246, 0.14);
+  --neptune-badge-cobalt-text: #93c5fd;
+  --neptune-badge-cobalt-border: rgba(59, 130, 246, 0.3);
+
   --neptune-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
   --neptune-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
   --neptune-shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.6);
-  --neptune-shadow-emerald: 0 0 24px -2px rgba(16, 185, 129, 0.35);
-  --neptune-shadow-amber: 0 0 24px -2px rgba(245, 158, 11, 0.35);
-  --neptune-shadow-crimson: 0 0 24px -2px rgba(239, 68, 68, 0.35);
-
-  /* Transitions & Animation Curves */
-  --neptune-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
-  --neptune-transition-slow: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
-}
-
-/* --------------------------------------------------------------------------
-   HIGH-CONTRAST SUNLIGHT OUTDOOR MODE (>100,000 LUX VILLAGE READABILITY)
-   -------------------------------------------------------------------------- */
-[data-theme="sunlight"] {
-  --neptune-bg-base: #ffffff;
-  --neptune-bg-surface: #f8fafc;
-  --neptune-bg-card: #ffffff;
-  --neptune-bg-card-hover: #f1f5f9;
-  --neptune-bg-elevated: #e2e8f0;
-  --neptune-bg-glass: #ffffff;
-  --neptune-bg-glass-active: #f8fafc;
-
-  --neptune-border-subtle: #94a3b8;
-  --neptune-border-card: #0f172a;
-  --neptune-border-hover: #000000;
-  --neptune-border-active: #047857;
-
-  --neptune-text-primary: #000000;
-  --neptune-text-secondary: #0f172a;
-  --neptune-text-tertiary: #334155;
-  --neptune-text-muted: #475569;
-  --neptune-text-inverse: #ffffff;
-
-  --neptune-emerald: #047857;
-  --neptune-emerald-glow: rgba(4, 120, 87, 0.2);
-  --neptune-amber: #b45309;
-  --neptune-amber-glow: rgba(180, 83, 9, 0.2);
-  --neptune-crimson: #b91c1c;
-  --neptune-crimson-glow: rgba(185, 28, 28, 0.2);
-  --neptune-cobalt: #1d4ed8;
-
-  --neptune-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
-  --neptune-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
-  --neptune-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
 }
 
 /* --------------------------------------------------------------------------
@@ -311,27 +358,27 @@ code, pre {
 }
 
 .badge-emerald {
-  background: rgba(16, 185, 129, 0.14);
-  color: var(--neptune-emerald-light);
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--neptune-badge-emerald-bg);
+  color: var(--neptune-badge-emerald-text);
+  border: 1px solid var(--neptune-badge-emerald-border);
 }
 
 .badge-amber {
-  background: rgba(245, 158, 11, 0.14);
-  color: var(--neptune-amber-light);
-  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: var(--neptune-badge-amber-bg);
+  color: var(--neptune-badge-amber-text);
+  border: 1px solid var(--neptune-badge-amber-border);
 }
 
 .badge-crimson {
-  background: rgba(239, 68, 68, 0.14);
-  color: var(--neptune-crimson-light);
-  border: 1px solid rgba(239, 68, 68, 0.3);
+  background: var(--neptune-badge-crimson-bg);
+  color: var(--neptune-badge-crimson-text);
+  border: 1px solid var(--neptune-badge-crimson-border);
 }
 
 .badge-cobalt {
-  background: rgba(59, 130, 246, 0.14);
-  color: #93c5fd;
-  border: 1px solid rgba(59, 130, 246, 0.3);
+  background: var(--neptune-badge-cobalt-bg);
+  color: var(--neptune-badge-cobalt-text);
+  border: 1px solid var(--neptune-badge-cobalt-border);
 }
 
 .badge-neutral {

@@ -12,11 +12,12 @@ export interface NeptuneState {
   currentView: AppView;
   surfaceMode: SurfaceMode;
   userMode: UserMode;
-  theme: 'dark' | 'sunlight';
+  theme: 'light' | 'dark';
   language: IndicLanguage;
   dossiers: ICitizenRTIDossier[];
   selectedDossierId: string | null;
   authorities: IPublicAuthorityNode[];
+  preselectedAuthorityId: string | null;
   isOmnibarOpen: boolean;
   isSettingsOpen: boolean;
   isHelpOpen: boolean;
@@ -27,18 +28,19 @@ export interface NeptuneState {
   backendStatus: 'STANDALONE_LOCAL' | 'LIVE_CONNECTED';
 }
 
-const STORAGE_KEY = 'neptune_prod_state_v2';
+const STORAGE_KEY = 'neptune_prod_state_v3';
 
 // Initial state
 const defaultState: NeptuneState = {
   currentView: 'intake',
   surfaceMode: 'DESKTOP_LITIGATION',
   userMode: 'CITIZEN',
-  theme: 'dark',
+  theme: 'light',
   language: 'HINDI',
   dossiers: INITIAL_DOSSIERS,
   selectedDossierId: INITIAL_DOSSIERS[0].dossierId,
   authorities: INITIAL_PUBLIC_AUTHORITIES,
+  preselectedAuthorityId: null,
   isOmnibarOpen: false,
   isSettingsOpen: false,
   isHelpOpen: false,
@@ -121,8 +123,13 @@ export function useNeptuneStore() {
   };
 
   const toggleTheme = () => {
-    const nextTheme = globalState.theme === 'dark' ? 'sunlight' : 'dark';
+    const nextTheme = globalState.theme === 'dark' ? 'light' : 'dark';
     globalState = { ...globalState, theme: nextTheme };
+    notify();
+  };
+
+  const setPreselectedAuthority = (authorityId: string) => {
+    globalState = { ...globalState, preselectedAuthorityId: authorityId, currentView: 'intake' };
     notify();
   };
 
@@ -207,6 +214,7 @@ export function useNeptuneStore() {
     setNoticeScannerOpen,
     setLogisticsOpen,
     setCicAppealOpen,
+    setPreselectedAuthority,
     addDossier,
     updateDossier,
   };

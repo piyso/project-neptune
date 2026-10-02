@@ -4,7 +4,7 @@ import { IPublicAuthorityNode } from '../../types/dossier.js';
 import { Landmark, Search, Filter, ArrowRight, ShieldCheck, Clock, MapPin, ExternalLink } from 'lucide-react';
 
 export const AuthoritySearch: React.FC = () => {
-  const { authorities, setView } = useNeptuneStore();
+  const { authorities, setView, setPreselectedAuthority } = useNeptuneStore();
   const [searchTerm, setSearchTerm] = useState('');
   const [portalFilter, setPortalFilter] = useState<'ALL' | 'CENTRAL_ONLINE' | 'STATE_ONLINE' | 'OFFLINE_SPEED_POST'>('ALL');
 
@@ -155,11 +155,11 @@ export const AuthoritySearch: React.FC = () => {
 
             {/* Launch Action */}
             <button
-              onClick={() => setView('intake')}
-              className="btn btn-outline btn-sm"
-              style={{ marginTop: 'auto', width: '100%', justifyContent: 'center' }}
+              onClick={() => setPreselectedAuthority(pa.id)}
+              className="btn btn-primary btn-sm"
+              style={{ marginTop: 'auto', width: '100%', justifyContent: 'center', fontWeight: 700 }}
             >
-              <span>Draft RTI for this Authority</span>
+              <span>Draft RTI to this Ministry</span>
               <ArrowRight size={14} />
             </button>
           </div>

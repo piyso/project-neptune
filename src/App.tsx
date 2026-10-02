@@ -2,6 +2,7 @@ import React, { useEffect } from 'react';
 import { useNeptuneStore } from './store/useNeptuneStore.js';
 import { Header } from './components/layout/Header.js';
 import { Navigation } from './components/layout/Navigation.js';
+import { Footer } from './components/layout/Footer.js';
 import { OmnibarModal } from './components/layout/OmnibarModal.js';
 import { SettingsModal } from './components/settings/SettingsModal.js';
 import { VoiceIntakeBox } from './components/intake/VoiceIntakeBox.js';
@@ -81,6 +82,9 @@ export const App: React.FC = () => {
       <main className="main-content">
         {renderCurrentView()}
       </main>
+
+      {/* Sovereign Civic Footer */}
+      <Footer />
 
       {/* Global Cmd+K Command Dispatcher */}
       <OmnibarModal />

@@ -1,11 +1,9 @@
 import React from 'react';
 import { useNeptuneStore, IndicLanguage } from '../../store/useNeptuneStore.js';
-import { Shield, Sun, Moon, Search, Settings, HelpCircle, User, Scale } from 'lucide-react';
+import { Shield, Sun, Moon, Search, Settings, HelpCircle } from 'lucide-react';
 
 export const Header: React.FC = () => {
   const {
-    userMode,
-    setUserMode,
     theme,
     toggleTheme,
     language,
@@ -13,7 +11,6 @@ export const Header: React.FC = () => {
     setOmnibarOpen,
     setSettingsOpen,
     setHelpOpen,
-    backendStatus,
   } = useNeptuneStore();
 
   return (
@@ -39,18 +36,18 @@ export const Header: React.FC = () => {
         {/* Brand identity */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
           <div style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
-            background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.25) 0%, rgba(6, 182, 212, 0.25) 100%)',
-            border: '1px solid rgba(16, 185, 129, 0.5)',
+            width: 38,
+            height: 38,
+            borderRadius: 10,
+            background: 'linear-gradient(135deg, rgba(5, 150, 105, 0.15) 0%, rgba(37, 99, 235, 0.15) 100%)',
+            border: '1px solid var(--neptune-emerald)',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'center',
             color: 'var(--neptune-emerald)',
             boxShadow: 'var(--neptune-shadow-sm)',
           }}>
-            <Shield size={22} />
+            <Shield size={20} />
           </div>
           <div>
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
@@ -58,74 +55,22 @@ export const Header: React.FC = () => {
                 fontWeight: 800,
                 fontSize: '1.15rem',
                 letterSpacing: '-0.02em',
-                background: 'linear-gradient(90deg, #f8fafc 0%, #10b981 100%)',
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: theme === 'sunlight' ? '#000' : 'transparent',
+                color: 'var(--neptune-text-primary)',
               }}>
                 PROJECT NEPTUNE
               </span>
+              <span className="badge badge-emerald" style={{ fontSize: '0.65rem', padding: '0.15rem 0.5rem', fontWeight: 700 }}>
+                RTI Copilot
+              </span>
             </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--neptune-text-tertiary)', fontWeight: 500 }}>
-              Sovereign RTI Copilot • भारत का आरटीआई सहायक
+              भारत का आरटीआई सहायक • Right to Information Act, 2005
             </div>
           </div>
         </div>
 
         {/* Global Controls & Diagnostics */}
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
-          {/* View Mode Switcher: Citizen (Simple) vs Advocate (Pro) */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            background: 'var(--neptune-bg-elevated)',
-            border: '1px solid var(--neptune-border-card)',
-            borderRadius: 10,
-            padding: 2,
-          }}>
-            <button
-              onClick={() => setUserMode('CITIZEN')}
-              title="Citizen Mode: Clean, simple, easy-to-read view for everyday citizens"
-              style={{
-                border: 'none',
-                background: userMode === 'CITIZEN' ? 'var(--neptune-emerald)' : 'transparent',
-                color: userMode === 'CITIZEN' ? '#000' : 'var(--neptune-text-secondary)',
-                borderRadius: 8,
-                padding: '4px 10px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                transition: 'var(--neptune-transition)',
-              }}
-            >
-              <User size={13} />
-              <span>Citizen View</span>
-            </button>
-            <button
-              onClick={() => setUserMode('ADVOCATE')}
-              title="Advocate Mode: Deep 3-pane litigation suite with legal telemetry and CPIO radar"
-              style={{
-                border: 'none',
-                background: userMode === 'ADVOCATE' ? 'var(--neptune-cobalt)' : 'transparent',
-                color: userMode === 'ADVOCATE' ? '#fff' : 'var(--neptune-text-secondary)',
-                borderRadius: 8,
-                padding: '4px 10px',
-                cursor: 'pointer',
-                display: 'flex',
-                alignItems: 'center',
-                gap: 5,
-                fontSize: '0.78rem',
-                fontWeight: 700,
-                transition: 'var(--neptune-transition)',
-              }}
-            >
-              <Scale size={13} />
-              <span>Advocate Pro</span>
-            </button>
-          </div>
-
           {/* Quick Omnibar search trigger */}
           <button
             onClick={() => setOmnibarOpen(true)}
@@ -142,7 +87,7 @@ export const Header: React.FC = () => {
             className="btn btn-secondary btn-sm"
             style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}
           >
-            <HelpCircle size={14} style={{ color: 'var(--neptune-emerald-light)' }} />
+            <HelpCircle size={14} style={{ color: 'var(--neptune-emerald)' }} />
             <span>Guide</span>
           </button>
 
@@ -170,14 +115,14 @@ export const Header: React.FC = () => {
             <option value="MARATHI">🇮🇳 मराठी (Marathi)</option>
           </select>
 
-          {/* High-Contrast Sunlight Mode Toggle */}
+          {/* Light / Dark Mode Toggle */}
           <button
             onClick={toggleTheme}
             className="btn btn-secondary btn-sm"
-            title={theme === 'dark' ? 'Switch to Sunlight Mode (>100,000 lux outdoor sunlight use)' : 'Switch to Dark Mode'}
+            title={theme === 'dark' ? 'Switch to Clean Daylight Mode' : 'Switch to Dark Mode'}
             style={{ padding: '0.4rem 0.6rem' }}
           >
-            {theme === 'dark' ? <Sun size={15} style={{ color: '#fbbf24' }} /> : <Moon size={15} />}
+            {theme === 'dark' ? <Sun size={15} style={{ color: '#fbbf24' }} /> : <Moon size={15} style={{ color: '#64748b' }} />}
           </button>
 
           {/* Privacy & Security Settings */}

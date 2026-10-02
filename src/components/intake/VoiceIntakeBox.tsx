@@ -26,7 +26,7 @@ import {
 import confetti from 'canvas-confetti';
 
 export const VoiceIntakeBox: React.FC = () => {
-  const { language, addDossier, authorities, setHelpOpen } = useNeptuneStore();
+  const { language, addDossier, authorities, setHelpOpen, preselectedAuthorityId } = useNeptuneStore();
   const [currentStep, setCurrentStep] = useState<1 | 2 | 3>(1);
 
   const [isRecording, setIsRecording] = useState(false);
@@ -105,6 +105,7 @@ export const VoiceIntakeBox: React.FC = () => {
 
   // Match target authority
   const targetAuthority = authorities.find(a =>
+    preselectedAuthorityId ? a.id === preselectedAuthorityId :
     categoryKey === 'ROAD_POTHOLE' ? a.portalId === 'NHAI' :
     categoryKey === 'PENSION_DELAY' ? a.portalId === 'EPFO' :
     categoryKey === 'RATION_DELAY' ? a.portalId === 'DFPDS' || a.id.includes('ballia') :
@@ -237,11 +238,11 @@ export const VoiceIntakeBox: React.FC = () => {
             }}
           >
             <span style={{
-              width: 20,
-              height: 20,
+              width: 22,
+              height: 22,
               borderRadius: '50%',
-              background: currentStep > 1 ? 'var(--neptune-emerald)' : currentStep === 1 ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)',
-              color: '#000',
+              background: currentStep >= 1 ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -258,7 +259,7 @@ export const VoiceIntakeBox: React.FC = () => {
             style={{
               border: 'none',
               background: currentStep === 2 ? 'var(--neptune-bg-elevated)' : 'transparent',
-              color: currentStep === 2 ? 'var(--neptune-cyan)' : 'var(--neptune-text-secondary)',
+              color: currentStep === 2 ? 'var(--neptune-cobalt)' : 'var(--neptune-text-secondary)',
               borderRadius: 8,
               padding: '0.55rem 0.75rem',
               display: 'flex',
@@ -273,11 +274,11 @@ export const VoiceIntakeBox: React.FC = () => {
             }}
           >
             <span style={{
-              width: 20,
-              height: 20,
+              width: 22,
+              height: 22,
               borderRadius: '50%',
-              background: currentStep > 2 ? 'var(--neptune-cyan)' : currentStep === 2 ? 'var(--neptune-cyan)' : 'var(--neptune-border-card)',
-              color: '#000',
+              background: currentStep >= 2 ? 'var(--neptune-cobalt)' : 'var(--neptune-border-card)',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
@@ -294,7 +295,7 @@ export const VoiceIntakeBox: React.FC = () => {
             style={{
               border: 'none',
               background: currentStep === 3 ? 'var(--neptune-bg-elevated)' : 'transparent',
-              color: currentStep === 3 ? 'var(--neptune-amber-light)' : 'var(--neptune-text-secondary)',
+              color: currentStep === 3 ? 'var(--neptune-amber)' : 'var(--neptune-text-secondary)',
               borderRadius: 8,
               padding: '0.55rem 0.75rem',
               display: 'flex',
@@ -309,11 +310,11 @@ export const VoiceIntakeBox: React.FC = () => {
             }}
           >
             <span style={{
-              width: 20,
-              height: 20,
+              width: 22,
+              height: 22,
               borderRadius: '50%',
               background: currentStep === 3 ? 'var(--neptune-amber)' : 'var(--neptune-border-card)',
-              color: '#000',
+              color: '#ffffff',
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
