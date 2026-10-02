@@ -1,0 +1,16 @@
+{
+  "name": "Project Neptune • Sovereign Civic Copilot",
+  "short_name": "Neptune RTI",
+  "description": "Autonomous Civic Jurisdiction Resolution & In-Browser Statutory Copilot",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#07090e",
+  "theme_color": "#07090e",
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
