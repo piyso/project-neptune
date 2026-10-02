@@ -2,12 +2,12 @@ import React, { useState, useEffect } from 'react';
 import { useNeptuneStore } from '../../store/useNeptuneStore.js';
 import { NeptuneApiClient } from '../../services/api.js';
 import { IBsaCertificate } from '../../types/vault.js';
-import { Shield, KeySquare, CheckCircle, Download, ExternalLink, Hash, Lock, FileCheck } from 'lucide-react';
+import { Shield, Lock, Download, Check, Copy } from 'lucide-react';
 
 export const MerkleVisualizer: React.FC = () => {
   const { dossiers, selectedDossierId } = useNeptuneStore();
   const [cert, setCert] = useState<IBsaCertificate | null>(null);
-  const [selectedLeaf, setSelectedLeaf] = useState<string | null>(null);
+  const [copied, setCopied] = useState(false);
 
   const currentDossier = dossiers.find(d => d.dossierId === selectedDossierId) || dossiers[0];
 
@@ -20,8 +20,14 @@ export const MerkleVisualizer: React.FC = () => {
   }, [currentDossier?.dossierId]);
 
   if (!cert) {
-    return <div className="neptune-card"><p>Computing Section 63 BSA Cryptographic Merkle Root...</p></div>;
+    return <div className="neptune-card" style={{ textAlign: 'center', padding: '2rem' }}><p>Computing Section 63 BSA Cryptographic Proof...</p></div>;
   }
+
+  const handleCopyHash = () => {
+    navigator.clipboard.writeText(cert.merkleRootHash);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+  };
 
   const handleDownloadCert = () => {
     const certText = `GOVERNMENT OF INDIA EVIDENCE ADMISSIBILITY CERTIFICATE
@@ -60,166 +66,111 @@ STATUS: SECURE • COURT ADMISSIBLE IN ALL HIGH COURTS AND APEX COURT`;
   };
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
-      {/* Top Banner */}
-      <div className="neptune-card neptune-card-glass" style={{ borderLeft: '4px solid var(--neptune-emerald)' }}>
+    <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* Main Evidence Certificate Card */}
+      <div className="neptune-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
-              <Shield size={22} style={{ color: 'var(--neptune-emerald)' }} />
-              Legal Proof & Evidence Vault • कानूनी सबूत व डिजिटल प्रमाण
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span className="badge badge-emerald" style={{ fontSize: '0.72rem' }}>
+                Court Admissible Evidence
+              </span>
+              <span className="badge badge-neutral" style={{ fontSize: '0.72rem' }}>
+                Section 63 BSA 2023
+              </span>
+            </div>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--neptune-text-primary)' }}>
+              Digital Evidence Certificate
             </h2>
-            <p style={{ fontSize: '0.88rem', color: 'var(--neptune-text-secondary)', marginTop: 4, lineHeight: 1.4 }}>
-              Under Section 63 of India's Bharatiya Sakshya Adhiniyam (BSA) 2023, every RTI is sealed with a court-admissible digital fingerprint. This legally guarantees that government departments cannot claim they never received your application.
-            </p>
+            <div style={{ fontSize: '0.84rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
+              Case: <strong>{currentDossier.title}</strong> ({currentDossier.govRegistrationNumber || currentDossier.postalBarcode})
+            </div>
           </div>
+
           <button onClick={handleDownloadCert} className="btn btn-primary btn-sm" style={{ fontWeight: 700 }}>
             <Download size={15} />
-            <span>Export Court-Admissible Certificate</span>
+            <span>Download Official Certificate</span>
           </button>
         </div>
-      </div>
 
-      {/* Explainer callout note */}
-      <div style={{
-        background: 'rgba(16, 185, 129, 0.08)',
-        border: '1px solid rgba(16, 185, 129, 0.25)',
-        borderRadius: 12,
-        padding: '0.85rem 1.1rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: 10,
-        fontSize: '0.82rem',
-        color: 'var(--neptune-text-secondary)',
-      }}>
-        <span style={{ fontSize: '1.2rem' }}>💡</span>
-        <div>
-          <strong style={{ color: 'var(--neptune-emerald-light)' }}>How does this protect you in court?</strong> When you file an RTI, our engine locks a mathematical fingerprint (Merkle hash) of your voice, the exact questions filed, and the government's official server receipt. If officials ever deny receipt before an Information Commissioner or High Court, this certificate provides 100% admissible legal proof.
-        </div>
-      </div>
-
-      {/* Case Selector Strip */}
-      <div className="neptune-card" style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--neptune-text-secondary)' }}>Selected Case:</span>
-          <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--neptune-text-primary)' }}>
-            {currentDossier.title} ({currentDossier.govRegistrationNumber || currentDossier.postalBarcode})
-          </span>
-        </div>
-        <span className="badge badge-emerald">
-          Proof Status: {cert.status}
-        </span>
-      </div>
-
-      {/* Interactive Merkle Tree Graph */}
-      <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem', padding: '2rem 1rem' }}>
-        <div style={{ textAlign: 'center' }}>
-          <span className="badge badge-cobalt" style={{ marginBottom: 4 }}>
-            RFC 3161 Deterministic Binary Merkle Topology
-          </span>
-          <h3 style={{ fontSize: '1.1rem', fontWeight: 800 }}>Court Evidence Chain of Custody</h3>
-        </div>
-
-        {/* Master Merkle Root Node */}
+        {/* Master Merkle Root Box */}
         <div style={{
-          background: 'linear-gradient(135deg, rgba(16, 185, 129, 0.2) 0%, rgba(6, 182, 212, 0.2) 100%)',
-          border: '2px solid var(--neptune-emerald)',
-          borderRadius: 14,
-          padding: '1rem 1.5rem',
-          maxWidth: 620,
-          width: '100%',
+          background: 'var(--neptune-badge-emerald-bg)',
+          border: '1px solid var(--neptune-badge-emerald-border)',
+          borderRadius: 12,
+          padding: '1.25rem',
           textAlign: 'center',
-          boxShadow: 'var(--neptune-shadow-emerald)',
         }}>
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--neptune-emerald-light)', fontWeight: 800, fontSize: '0.82rem' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 6, color: 'var(--neptune-emerald)', fontWeight: 800, fontSize: '0.78rem' }}>
             <Lock size={15} />
-            <span>MERKLE ROOT HASH (COURT SEAL)</span>
+            <span>CRYPTOGRAPHIC MERKLE ROOT HASH</span>
           </div>
-          <div style={{ fontSize: '0.82rem', fontFamily: 'var(--neptune-font-mono)', color: '#fff', wordBreak: 'break-all', marginTop: 4, fontWeight: 700 }}>
+          <div style={{
+            fontSize: '0.92rem',
+            fontFamily: 'var(--neptune-font-mono)',
+            color: 'var(--neptune-text-primary)',
+            wordBreak: 'break-all',
+            marginTop: 6,
+            fontWeight: 700,
+          }}>
             {cert.merkleRootHash}
           </div>
+          <button
+            onClick={handleCopyHash}
+            className="btn btn-secondary btn-sm"
+            style={{ marginTop: 10, fontSize: '0.75rem', padding: '0.3rem 0.75rem' }}
+          >
+            {copied ? <Check size={13} style={{ color: 'var(--neptune-emerald)' }} /> : <Copy size={13} />}
+            <span>{copied ? 'Copied Hash' : 'Copy Hash'}</span>
+          </button>
         </div>
 
-        {/* Branch Lines */}
-        <div style={{ display: 'flex', justifyContent: 'space-around', width: '70%', height: 24, position: 'relative' }}>
-          <div style={{ width: '45%', borderBottom: '2px dashed var(--neptune-border-card)', borderLeft: '2px dashed var(--neptune-border-card)' }} />
-          <div style={{ width: '45%', borderBottom: '2px dashed var(--neptune-border-card)', borderRight: '2px dashed var(--neptune-border-card)' }} />
-        </div>
-
-        {/* Level 1 Intermediate Nodes */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '2rem', width: '100%', maxWidth: 840 }}>
-          {/* Node H12 */}
-          <div style={{
-            background: 'var(--neptune-bg-elevated)',
-            border: '1px solid var(--neptune-border-card)',
-            borderRadius: 10,
-            padding: '0.85rem 1rem',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', fontWeight: 700, textTransform: 'uppercase' }}>
-              Intermediate Node H(1,2)
-            </div>
-            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--neptune-font-mono)', color: 'var(--neptune-cyan)', wordBreak: 'break-all', marginTop: 2 }}>
-              {cert.nodeH12}
-            </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--neptune-text-tertiary)', marginTop: 4 }}>
-              SHA256(Audio + Section 2(f) Draft Text)
-            </div>
+        {/* 4 Sealed Components */}
+        <div>
+          <div style={{ fontSize: '0.76rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700, marginBottom: 8 }}>
+            Sealed Component Hashes (SHA-256):
           </div>
-
-          {/* Node H34 */}
-          <div style={{
-            background: 'var(--neptune-bg-elevated)',
-            border: '1px solid var(--neptune-border-card)',
-            borderRadius: 10,
-            padding: '0.85rem 1rem',
-            textAlign: 'center',
-          }}>
-            <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', fontWeight: 700, textTransform: 'uppercase' }}>
-              Intermediate Node H(3,4)
-            </div>
-            <div style={{ fontSize: '0.75rem', fontFamily: 'var(--neptune-font-mono)', color: 'var(--neptune-cobalt)', wordBreak: 'break-all', marginTop: 2 }}>
-              {cert.nodeH34}
-            </div>
-            <div style={{ fontSize: '0.7rem', color: 'var(--neptune-text-tertiary)', marginTop: 4 }}>
-              SHA256(HTTP Wire Payload + Server Receipt)
-            </div>
+          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem' }}>
+            {[
+              { title: '1. Citizen Voice Audio', hash: cert.leafs.citizenVoiceAudioHash, desc: '16kHz PCM Speech Recording' },
+              { title: '2. Certified Query Draft', hash: cert.leafs.synthesizedDraftTextHash, desc: 'Section 2(f) Record Requests' },
+              { title: '3. HTTP Wire Payload', hash: cert.leafs.httpRequestWireHash, desc: 'TLS Submission Packet Digest' },
+              { title: '4. Govt Server Receipt', hash: cert.leafs.govtServerReceiptHash, desc: 'NIC Online Portal Receipt' },
+            ].map((leaf, i) => (
+              <div
+                key={i}
+                style={{
+                  background: 'var(--neptune-bg-surface)',
+                  border: '1px solid var(--neptune-border-card)',
+                  borderRadius: 10,
+                  padding: '0.85rem',
+                }}
+              >
+                <div style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--neptune-text-primary)' }}>
+                  {leaf.title}
+                </div>
+                <code style={{ fontSize: '0.72rem', color: 'var(--neptune-emerald)', wordBreak: 'break-all', display: 'block', marginTop: 4 }}>
+                  {leaf.hash.substring(0, 24)}...
+                </code>
+                <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', marginTop: 4 }}>
+                  {leaf.desc}
+                </div>
+              </div>
+            ))}
           </div>
         </div>
 
-        {/* Level 0 Leaf Nodes */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(180px, 1fr))', gap: '1rem', width: '100%' }}>
-          {[
-            { id: 'l1', title: 'Leaf 1: Citizen Voice', hash: cert.leafs.citizenVoiceAudioHash, desc: '16kHz PCM Raw Speech Stream' },
-            { id: 'l2', title: 'Leaf 2: CFG Draft Text', hash: cert.leafs.synthesizedDraftTextHash, desc: 'Unassailable Section 2(f) Prose' },
-            { id: 'l3', title: 'Leaf 3: HTTP Wire Request', hash: cert.leafs.httpRequestWireHash, desc: 'TLS Wire Packet Digest' },
-            { id: 'l4', title: 'Leaf 4: Govt Ack Receipt', hash: cert.leafs.govtServerReceiptHash, desc: 'NIC Portal HTTP 200 Response' },
-          ].map(leaf => (
-            <div
-              key={leaf.id}
-              onClick={() => setSelectedLeaf(leaf.id)}
-              style={{
-                background: 'var(--neptune-bg-surface)',
-                border: '1px solid var(--neptune-border-card)',
-                borderRadius: 8,
-                padding: '0.75rem',
-                cursor: 'pointer',
-                transition: 'var(--neptune-transition)',
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.borderColor = 'var(--neptune-emerald)')}
-              onMouseLeave={(e) => (e.currentTarget.style.borderColor = 'var(--neptune-border-card)')}
-            >
-              <div style={{ fontSize: '0.72rem', fontWeight: 700, color: 'var(--neptune-emerald-light)' }}>
-                {leaf.title}
-              </div>
-              <div style={{ fontSize: '0.68rem', fontFamily: 'var(--neptune-font-mono)', color: 'var(--neptune-text-tertiary)', wordBreak: 'break-all', marginTop: 4 }}>
-                {leaf.hash.substring(0, 16)}...
-              </div>
-              <div style={{ fontSize: '0.68rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
-                {leaf.desc}
-              </div>
-            </div>
-          ))}
+        {/* Legal Admissibility Guarantee */}
+        <div style={{
+          background: 'var(--neptune-bg-elevated)',
+          border: '1px solid var(--neptune-border-card)',
+          borderRadius: 10,
+          padding: '0.85rem 1rem',
+          fontSize: '0.8rem',
+          color: 'var(--neptune-text-secondary)',
+          lineHeight: 1.45,
+        }}>
+          ⚖️ <strong>Statutory Admissibility:</strong> Under Section 63(4) of the Bharatiya Sakshya Adhiniyam 2023, this digital certificate certifies that the electronic record was produced by an automated computing system operating regularly, providing complete legal admissibility before any Information Commission or High Court in India.
         </div>
       </div>
     </div>

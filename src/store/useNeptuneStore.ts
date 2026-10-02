@@ -28,7 +28,7 @@ export interface NeptuneState {
   backendStatus: 'STANDALONE_LOCAL' | 'LIVE_CONNECTED';
 }
 
-const STORAGE_KEY = 'neptune_prod_state_v3';
+const STORAGE_KEY = 'neptune_prod_state_v4';
 
 // Initial state
 const defaultState: NeptuneState = {
