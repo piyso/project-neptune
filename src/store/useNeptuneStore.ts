@@ -70,6 +70,8 @@ function notify() {
     localStorage.setItem(STORAGE_KEY, JSON.stringify({
       currentView: globalState.currentView,
       surfaceMode: globalState.surfaceMode,
+      userMode: globalState.userMode,
+      isKanbanView: globalState.isKanbanView,
       theme: globalState.theme,
       language: globalState.language,
       dossiers: globalState.dossiers,

@@ -12,10 +12,10 @@ import { KioskTouchGrid } from './components/kiosk/KioskTouchGrid.js';
 import { CitizenHeroBanner } from './components/layout/CitizenHeroBanner.js';
 import { HelpGuideModal } from './components/layout/HelpGuideModal.js';
 import { offlineSyncEngine } from './services/indexedDbSync.js';
-import { WifiOff, Smartphone, Laptop, Monitor } from 'lucide-react';
+import { WifiOff } from 'lucide-react';
 
 export const App: React.FC = () => {
-  const { currentView, surfaceMode, setSurfaceMode, isSettingsOpen, setSettingsOpen } = useNeptuneStore();
+  const { currentView, isSettingsOpen, setSettingsOpen } = useNeptuneStore();
   const [isOnline, setIsOnline] = React.useState(navigator.onLine);
 
   useEffect(() => {
