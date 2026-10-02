@@ -56,7 +56,7 @@ export const Header: React.FC = () => {
             <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
               <span style={{
                 fontWeight: 800,
-                fontSize: '1.1rem',
+                fontSize: '1.15rem',
                 letterSpacing: '-0.02em',
                 background: 'linear-gradient(90deg, #f8fafc 0%, #10b981 100%)',
                 WebkitBackgroundClip: 'text',
@@ -64,12 +64,9 @@ export const Header: React.FC = () => {
               }}>
                 PROJECT NEPTUNE
               </span>
-              <span className="badge badge-emerald" style={{ fontSize: '0.65rem', padding: '0.15rem 0.45rem' }}>
-                CITIZEN v1.0
-              </span>
             </div>
             <div style={{ fontSize: '0.74rem', color: 'var(--neptune-text-tertiary)', fontWeight: 500 }}>
-              India's RTI Copilot • भारत का आरटीआई सहायक
+              Sovereign RTI Copilot • भारत का आरटीआई सहायक
             </div>
           </div>
         </div>
@@ -129,16 +126,6 @@ export const Header: React.FC = () => {
             </button>
           </div>
 
-          {/* Quick How It Works trigger */}
-          <button
-            onClick={() => setHelpOpen(true)}
-            className="btn btn-secondary btn-sm"
-            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}
-          >
-            <HelpCircle size={14} style={{ color: 'var(--neptune-emerald-light)' }} />
-            <span>How RTI Works</span>
-          </button>
-
           {/* Quick Omnibar search trigger */}
           <button
             onClick={() => setOmnibarOpen(true)}
@@ -146,7 +133,17 @@ export const Header: React.FC = () => {
             style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}
           >
             <Search size={14} />
-            <span>Search</span>
+            <span>Search (⌘K)</span>
+          </button>
+
+          {/* Quick How It Works guide trigger */}
+          <button
+            onClick={() => setHelpOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', fontSize: '0.78rem' }}
+          >
+            <HelpCircle size={14} style={{ color: 'var(--neptune-emerald-light)' }} />
+            <span>Guide</span>
           </button>
 
           {/* Indic Language Selector */}

@@ -430,30 +430,6 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
                 </button>
               )}
             </div>
-
-            {/* Advocate Mode Switcher Card */}
-            <div style={{
-              background: 'var(--neptune-bg-surface)',
-              border: '1px solid var(--neptune-border-card)',
-              borderRadius: 12,
-              padding: '1rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'space-between',
-              gap: 10,
-            }}>
-              <div>
-                <div style={{ fontWeight: 700, fontSize: '0.82rem' }}>Are you an advocate or lawyer?</div>
-                <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)' }}>Switch to the 3-pane litigation cockpit with CPIO radar</div>
-              </div>
-              <button
-                onClick={() => setUserMode('ADVOCATE')}
-                className="btn btn-secondary btn-sm"
-                style={{ fontSize: '0.74rem', whiteSpace: 'nowrap' }}
-              >
-                <span>Advocate Mode →</span>
-              </button>
-            </div>
           </div>
         </div>
 

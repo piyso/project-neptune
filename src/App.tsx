@@ -9,7 +9,6 @@ import { DossierDetail } from './components/dossiers/DossierDetail.js';
 import { AuthoritySearch } from './components/cadastre/AuthoritySearch.js';
 import { MerkleVisualizer } from './components/vault/MerkleVisualizer.js';
 import { KioskTouchGrid } from './components/kiosk/KioskTouchGrid.js';
-import { CitizenHeroBanner } from './components/layout/CitizenHeroBanner.js';
 import { HelpGuideModal } from './components/layout/HelpGuideModal.js';
 import { offlineSyncEngine } from './services/indexedDbSync.js';
 import { WifiOff } from 'lucide-react';
@@ -78,11 +77,8 @@ export const App: React.FC = () => {
       {/* Surface Navigation */}
       <Navigation />
 
-      {/* Main Content Workspace with Multi-Device Frame Emulation if selected */}
+      {/* Main Content Workspace */}
       <main className="main-content">
-        {/* Welcoming Citizen Hero Onboarding Banner */}
-        <CitizenHeroBanner />
-
         {renderCurrentView()}
       </main>
 

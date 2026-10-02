@@ -7,12 +7,12 @@ export const Navigation: React.FC = () => {
 
   const overdueCount = dossiers.filter(d => d.statutoryClock.isOverdue).length;
 
-  const navItems: Array<{ id: AppView; label: string; subLabel: string; icon: React.ReactNode; badge?: number | string }> = [
-    { id: 'intake', label: 'Draft RTI', subLabel: 'शिकायत दर्ज करें', icon: <Mic size={17} /> },
-    { id: 'dossiers', label: 'Track Cases', subLabel: 'समय सीमा व स्थिति', icon: <FolderKanban size={17} />, badge: overdueCount > 0 ? `${overdueCount} Overdue` : dossiers.length },
-    { id: 'cadastre', label: 'Govt Directory', subLabel: 'सरकारी विभाग', icon: <Landmark size={17} /> },
-    { id: 'vault', label: 'Legal Proof Vault', subLabel: 'सबूत व सर्टिफिकेट', icon: <KeySquare size={17} /> },
-    { id: 'kiosk', label: 'Simple Touch Kiosk', subLabel: 'आसान मोड', icon: <Monitor size={17} /> },
+  const navItems: Array<{ id: AppView; label: string; icon: React.ReactNode; badge?: number | string }> = [
+    { id: 'intake', label: 'Draft RTI', icon: <Mic size={16} /> },
+    { id: 'dossiers', label: 'Track Cases', icon: <FolderKanban size={16} />, badge: overdueCount > 0 ? `${overdueCount} Overdue` : dossiers.length },
+    { id: 'cadastre', label: 'Govt Directory', icon: <Landmark size={16} /> },
+    { id: 'vault', label: 'Evidence Vault', icon: <KeySquare size={16} /> },
+    { id: 'kiosk', label: 'Kiosk Mode', icon: <Monitor size={16} /> },
   ];
 
   return (
@@ -21,14 +21,14 @@ export const Navigation: React.FC = () => {
       <nav style={{
         background: 'var(--neptune-bg-surface)',
         borderBottom: '1px solid var(--neptune-border-card)',
-        padding: '0.25rem 1.5rem',
+        padding: '0 1.5rem',
       }} className="desktop-nav-container">
         <div style={{
           maxWidth: 1440,
           margin: '0 auto',
           display: 'flex',
           alignItems: 'center',
-          gap: '0.4rem',
+          gap: '0.35rem',
           overflowX: 'auto',
         }}>
           {navItems.map((item) => {
@@ -42,26 +42,22 @@ export const Navigation: React.FC = () => {
                   background: isActive ? 'var(--neptune-bg-card)' : 'transparent',
                   color: isActive ? 'var(--neptune-emerald-light)' : 'var(--neptune-text-secondary)',
                   borderBottom: isActive ? '2px solid var(--neptune-emerald)' : '2px solid transparent',
-                  padding: '0.6rem 1rem',
+                  padding: '0.65rem 1.1rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.55rem',
+                  gap: '0.5rem',
                   fontSize: '0.86rem',
                   fontWeight: isActive ? 700 : 500,
                   cursor: 'pointer',
                   transition: 'var(--neptune-transition)',
                   whiteSpace: 'nowrap',
+                  borderRadius: '6px 6px 0 0',
                 }}
               >
                 {item.icon}
-                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
-                  <span style={{ lineHeight: 1.2 }}>{item.label}</span>
-                  <span style={{ fontSize: '0.68rem', color: isActive ? 'var(--neptune-emerald)' : 'var(--neptune-text-tertiary)', fontWeight: 500 }}>
-                    {item.subLabel}
-                  </span>
-                </div>
-                {item.badge && (
-                  <span className={`badge ${typeof item.badge === 'string' && item.badge.includes('Overdue') ? 'badge-crimson' : 'badge-neutral'}`} style={{ fontSize: '0.7rem', marginLeft: 4 }}>
+                <span>{item.label}</span>
+                {item.badge !== undefined && (
+                  <span className={`badge ${typeof item.badge === 'string' && item.badge.includes('Overdue') ? 'badge-crimson' : 'badge-neutral'}`} style={{ fontSize: '0.68rem', padding: '0.1rem 0.4rem', marginLeft: 4 }}>
                     {item.badge}
                   </span>
                 )}
