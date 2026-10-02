@@ -1,6 +1,7 @@
 # 🏛️ Project Neptune: Sovereign Civic Intelligence & Statutory RTI Copilot
 
-[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://project-neptune-frontend.vercel.app)
+[![Vercel Deployment](https://img.shields.io/badge/Vercel-Deployed-black?logo=vercel)](https://neptune-civic.vercel.app)
+[![GitHub Pages](https://img.shields.io/badge/GitHub%20Pages-Live-22c55e?logo=github)](https://piyso.github.io/project-neptune/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-emerald.svg)](LICENSE)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5.6-blue.svg?logo=typescript)](https://www.typescriptlang.org/)
 [![Vite](https://img.shields.io/badge/Vite-6.0-purple.svg?logo=vite)](https://vitejs.dev/)
@@ -11,9 +12,10 @@
 
 ---
 
-## 🌐 Live Public Deployment
+## 🌐 Live Public Deployments (Ready for Citizens)
 
-- **Production Web Application**: [https://project-neptune-frontend.vercel.app](https://project-neptune-frontend.vercel.app)
+- **Primary Vercel Production**: [https://neptune-civic.vercel.app](https://neptune-civic.vercel.app)
+- **High-Availability GitHub Pages**: [https://piyso.github.io/project-neptune/](https://piyso.github.io/project-neptune/)
 - **GitHub Repository**: [https://github.com/piyso/project-neptune](https://github.com/piyso/project-neptune)
 
 ---
