@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useNeptuneStore } from '../../store/useNeptuneStore.js';
-import { StatutoryTimeline } from './StatutoryTimeline.js';
 import { AppealModal } from './AppealModal.js';
 import { NoticeScannerModal } from './NoticeScannerModal.js';
 import { LogisticsModal } from './LogisticsModal.js';
@@ -19,17 +18,16 @@ import {
   VolumeX,
   Camera,
   Truck,
-  Sparkles,
   Download,
   CheckCircle2,
   AlertCircle,
   Copy,
   Check,
-  ExternalLink,
-  ChevronRight,
-  Shield,
-  Layers,
+  ChevronDown,
+  ChevronUp,
   LayoutGrid,
+  Shield,
+  Send,
 } from 'lucide-react';
 
 export const DossierDetail: React.FC = () => {
@@ -39,8 +37,6 @@ export const DossierDetail: React.FC = () => {
     selectDossier,
     setView,
     language,
-    userMode,
-    setUserMode,
     isKanbanView,
     setKanbanView,
     isNoticeScannerOpen,
@@ -49,14 +45,17 @@ export const DossierDetail: React.FC = () => {
     setLogisticsOpen,
     isCicAppealOpen,
     setCicAppealOpen,
-    setHelpOpen,
   } = useNeptuneStore();
 
-  const [activeTab, setActiveTab] = useState<'questions' | 'timeline' | 'evidence' | 'advocate'>('questions');
   const [isAppealModalOpen, setIsAppealModalOpen] = useState(false);
   const [events, setEvents] = useState<TimelineEvent[]>([]);
   const [speakingBlockId, setSpeakingBlockId] = useState<string | null>(null);
   const [copiedField, setCopiedField] = useState<string | null>(null);
+
+  // Collapsible Accordion States (Clean, uncluttered defaults)
+  const [showQuestions, setShowQuestions] = useState(false);
+  const [showEvidence, setShowEvidence] = useState(false);
+  const [showAdvocateRadar, setShowAdvocateRadar] = useState(false);
 
   const dossier = dossiers.find(d => d.dossierId === selectedDossierId) || dossiers[0];
 
@@ -147,16 +146,13 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
   if (isKanbanView) {
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--neptune-bg-card)', padding: '0.8rem 1.2rem', borderRadius: 14, border: '1px solid var(--neptune-border-card)' }}>
+        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', background: 'var(--neptune-bg-card)', padding: '0.8rem 1.2rem', borderRadius: 12, border: '1px solid var(--neptune-border-card)' }}>
           <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
             <LayoutGrid size={18} color="var(--neptune-emerald)" />
             <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>Multi-Case Statutory Kanban Triage</h3>
           </div>
-          <button
-            onClick={() => setKanbanView(false)}
-            className="btn btn-secondary btn-sm"
-          >
-            ← Return to Case Dossier
+          <button onClick={() => setKanbanView(false)} className="btn btn-secondary btn-sm">
+            ← Return to Case Docket
           </button>
         </div>
         <DossierKanban />
@@ -165,8 +161,8 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
   }
 
   return (
-    <div style={{ maxWidth: 1040, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* 1. Case Selection Bar */}
+    <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+      {/* 1. Sleek Case Selector Bar */}
       <div style={{
         display: 'flex',
         alignItems: 'center',
@@ -174,10 +170,7 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
         flexWrap: 'wrap',
         gap: '0.75rem',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', overflowX: 'auto', paddingBottom: '0.2rem' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 700, color: 'var(--neptune-text-tertiary)', whiteSpace: 'nowrap' }}>
-            Active Cases:
-          </span>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', overflowX: 'auto', paddingBottom: '0.15rem' }}>
           {dossiers.map(d => {
             const isSelected = d.dossierId === dossier.dossierId;
             const isOverdue = d.statutoryClock.isOverdue;
@@ -187,11 +180,11 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
                 onClick={() => selectDossier(d.dossierId)}
                 style={{
                   border: `1px solid ${isSelected ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)'}`,
-                  background: isSelected ? 'var(--neptune-badge-emerald-bg)' : 'var(--neptune-bg-card)',
+                  background: isSelected ? 'var(--neptune-badge-emerald-bg)' : 'var(--neptune-bg-surface)',
                   color: isSelected ? 'var(--neptune-emerald)' : 'var(--neptune-text-secondary)',
                   borderRadius: 20,
-                  padding: '0.4rem 0.9rem',
-                  fontSize: '0.82rem',
+                  padding: '0.35rem 0.85rem',
+                  fontSize: '0.8rem',
                   fontWeight: isSelected ? 700 : 500,
                   cursor: 'pointer',
                   display: 'flex',
@@ -199,12 +192,11 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
                   gap: 6,
                   whiteSpace: 'nowrap',
                   transition: 'var(--neptune-transition)',
-                  boxShadow: isSelected ? 'var(--neptune-shadow-sm)' : 'none',
                 }}
               >
                 <span>{d.title.split('-')[0].trim()}</span>
-                <span className={`badge ${isOverdue ? 'badge-crimson' : 'badge-emerald'}`} style={{ fontSize: '0.64rem', padding: '0.1rem 0.4rem' }}>
-                  {isOverdue ? 'Overdue' : `${d.statutoryClock.daysRemaining}d left`}
+                <span className={`badge ${isOverdue ? 'badge-crimson' : 'badge-emerald'}`} style={{ fontSize: '0.62rem', padding: '0.1rem 0.35rem' }}>
+                  {isOverdue ? 'Overdue' : `${d.statutoryClock.daysRemaining}d`}
                 </span>
               </button>
             );
@@ -215,462 +207,387 @@ ${dossier.queryBlocks.map(q => `   Point ${q.pointNumber}. ${q.certifiedQueryTex
           <button
             onClick={() => setKanbanView(true)}
             className="btn btn-secondary btn-sm"
-            title="Multi-case kanban board view"
-            style={{ fontSize: '0.78rem' }}
+            title="Switch to Multi-case Kanban view"
+            style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem' }}
           >
-            <LayoutGrid size={14} />
+            <LayoutGrid size={13} />
             <span>Kanban</span>
           </button>
           <button
             onClick={() => setView('intake')}
             className="btn btn-primary btn-sm"
-            style={{ fontSize: '0.78rem' }}
+            style={{ fontSize: '0.76rem', padding: '0.35rem 0.65rem' }}
           >
-            + Draft New RTI
+            + New RTI
           </button>
         </div>
       </div>
 
-      {/* 2. Official Case Docket Hero Banner */}
-      <div className="neptune-card" style={{
-        borderLeft: `5px solid ${clock.isOverdue ? 'var(--neptune-crimson)' : 'var(--neptune-emerald)'}`,
-        padding: '1.5rem',
-      }}>
-        <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', flexWrap: 'wrap', gap: '1rem' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 8, flexWrap: 'wrap' }}>
-              <span className={`badge ${clock.isOverdue ? 'badge-crimson' : 'badge-emerald'}`} style={{ fontSize: '0.78rem', padding: '0.25rem 0.65rem' }}>
-                {clock.isOverdue ? '🔴 30-DAY STATUTORY DEADLINE EXPIRED (DEEMED REFUSAL)' : `🟢 IN PROGRESS • ${clock.daysRemaining} DAYS REMAINING`}
-              </span>
-              <span className="badge badge-neutral" style={{ fontSize: '0.72rem' }}>
-                {dossier.filingChannel === 'CENTRAL_ONLINE' ? 'NIC Central Online' : 'Speed Post + Postal Order'}
-              </span>
-            </div>
-
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: '0.25rem 0 0.45rem 0', color: 'var(--neptune-text-primary)' }}>
-              {dossier.title}
-            </h2>
-
-            <div style={{ fontSize: '0.86rem', color: 'var(--neptune-text-secondary)', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap' }}>
-              <span>Authority: <strong style={{ color: 'var(--neptune-text-primary)' }}>{dossier.targetAuthority.canonicalName}</strong></span>
-              <span>•</span>
-              <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
-                Docket Ref: <code style={{ color: 'var(--neptune-emerald)', fontWeight: 700 }}>{dossier.govRegistrationNumber || dossier.postalBarcode}</code>
-                <button
-                  onClick={() => handleCopy(dossier.govRegistrationNumber || dossier.postalBarcode || '', 'reg')}
-                  style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--neptune-text-tertiary)', padding: 2 }}
-                  title="Copy reference number"
-                >
-                  {copiedField === 'reg' ? <Check size={13} style={{ color: 'var(--neptune-emerald)' }} /> : <Copy size={13} />}
-                </button>
-              </span>
-            </div>
+      {/* 2. Amazon-Style Master Case Docket Card */}
+      <div className="neptune-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
+        {/* Header: Title & Reference */}
+        <div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 6 }}>
+            <span className={`badge ${clock.isOverdue ? 'badge-crimson' : 'badge-emerald'}`} style={{ fontSize: '0.75rem', padding: '0.2rem 0.6rem' }}>
+              {clock.isOverdue ? '🔴 STATUTORY DEADLINE EXPIRED (DEEMED REFUSAL)' : `🟢 IN PROGRESS • ${clock.daysRemaining} DAYS REMAINING`}
+            </span>
           </div>
 
-          {/* Right Action / Countdown Display */}
-          {clock.isOverdue ? (
+          <h2 style={{ fontSize: '1.3rem', fontWeight: 800, margin: '0.2rem 0', color: 'var(--neptune-text-primary)' }}>
+            {dossier.title}
+          </h2>
+
+          <div style={{ fontSize: '0.84rem', color: 'var(--neptune-text-secondary)', display: 'flex', alignItems: 'center', gap: 8, flexWrap: 'wrap', marginTop: 4 }}>
+            <span>Target: <strong style={{ color: 'var(--neptune-text-primary)' }}>{dossier.targetAuthority.canonicalName}</strong></span>
+            <span>•</span>
+            <span style={{ display: 'inline-flex', alignItems: 'center', gap: 4 }}>
+              Ref: <code style={{ color: 'var(--neptune-emerald)', fontWeight: 700 }}>{dossier.govRegistrationNumber || dossier.postalBarcode}</code>
+              <button
+                onClick={() => handleCopy(dossier.govRegistrationNumber || dossier.postalBarcode || '', 'reg')}
+                style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--neptune-text-tertiary)', padding: 2 }}
+                title="Copy reference number"
+              >
+                {copiedField === 'reg' ? <Check size={12} style={{ color: 'var(--neptune-emerald)' }} /> : <Copy size={12} />}
+              </button>
+            </span>
+          </div>
+        </div>
+
+        {/* Amazon-Style Vertical Statutory Delivery Tracker */}
+        <div style={{
+          background: 'var(--neptune-bg-surface)',
+          border: '1px solid var(--neptune-border-card)',
+          borderRadius: 12,
+          padding: '1.25rem',
+        }}>
+          <div style={{ fontSize: '0.76rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700, marginBottom: '1rem' }}>
+            Statutory Progress Tracker (समय सीमा स्थिति)
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '1.1rem', position: 'relative' }}>
+            {/* Step 1 */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: 'var(--neptune-emerald)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: 2,
+              }}>
+                <Check size={13} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ fontSize: '0.88rem', color: 'var(--neptune-text-primary)' }}>1. Filed & Cryptographically Sealed</strong>
+                  <span style={{ fontSize: '0.74rem', color: 'var(--neptune-text-tertiary)' }}>{new Date(dossier.createdAt).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
+                  ₹10 fee remitted • Section 63 BSA Merkle root sealed
+                </div>
+              </div>
+            </div>
+
+            {/* Step 2 */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: 'var(--neptune-emerald)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: 2,
+              }}>
+                <Check size={13} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ fontSize: '0.88rem', color: 'var(--neptune-text-primary)' }}>2. Delivered to CPIO Office</strong>
+                  <span style={{ fontSize: '0.74rem', color: 'var(--neptune-text-tertiary)' }}>Confirmed</span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
+                  Acknowledged by {dossier.targetAuthority.cpioDesignation}
+                </div>
+              </div>
+            </div>
+
+            {/* Step 3 (Active Step) */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12 }}>
+              <div style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: clock.isOverdue ? 'var(--neptune-crimson)' : 'var(--neptune-amber)',
+                color: '#fff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: 2,
+              }}>
+                <Clock size={12} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ fontSize: '0.88rem', color: clock.isOverdue ? 'var(--neptune-crimson)' : 'var(--neptune-text-primary)' }}>
+                    {clock.isOverdue ? '3. Statutory 30 Days Expired (Deemed Refusal)' : `3. CPIO Review & Record Search (Day ${30 - clock.daysRemaining} of 30)`}
+                  </strong>
+                  <span className={`badge ${clock.isOverdue ? 'badge-crimson' : 'badge-amber'}`} style={{ fontSize: '0.64rem' }}>
+                    {clock.isOverdue ? 'ACTION REQUIRED' : 'ACTIVE NOW'}
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
+                  {clock.isOverdue
+                    ? 'The officer failed to reply within the legal deadline. You are entitled to a 100% free First Appeal.'
+                    : `Officer must deliver information by ${new Date(clock.currentStatutoryDeadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}.`}
+                </div>
+              </div>
+            </div>
+
+            {/* Step 4 (Future Step) */}
+            <div style={{ display: 'flex', alignItems: 'flex-start', gap: 12, opacity: clock.isOverdue ? 1 : 0.6 }}>
+              <div style={{
+                width: 22,
+                height: 22,
+                borderRadius: '50%',
+                background: 'var(--neptune-border-card)',
+                color: 'var(--neptune-text-tertiary)',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                flexShrink: 0,
+                marginTop: 2,
+              }}>
+                <Scale size={12} />
+              </div>
+              <div style={{ flex: 1 }}>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <strong style={{ fontSize: '0.88rem', color: 'var(--neptune-text-primary)' }}>4. Resolution or First Appeal</strong>
+                  <span style={{ fontSize: '0.74rem', color: 'var(--neptune-text-tertiary)' }}>Due: {new Date(clock.currentStatutoryDeadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short' })}</span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
+                  {clock.isOverdue ? 'First Appeal ready to submit under Section 19(1)' : 'Receive certified records or file free First Appeal'}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Primary Action Toolbar */}
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', flexWrap: 'wrap' }}>
+          {clock.isOverdue && (
             <button
               onClick={() => setIsAppealModalOpen(true)}
-              className="btn btn-danger btn-lg"
-              style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800 }}
+              className="btn btn-danger btn-md"
+              style={{ fontWeight: 800, flex: '1 1 200px' }}
             >
-              <Scale size={18} />
+              <Scale size={16} />
               <span>File Free First Appeal (1-Tap)</span>
             </button>
-          ) : (
-            <div style={{
-              background: 'var(--neptune-badge-emerald-bg)',
-              border: '1px solid var(--neptune-badge-emerald-border)',
-              borderRadius: 12,
-              padding: '0.75rem 1.1rem',
-              textAlign: 'right',
-            }}>
-              <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--neptune-emerald)', fontWeight: 800 }}>
-                Statutory Reply Deadline
-              </div>
-              <div style={{ fontSize: '1.25rem', fontWeight: 800, color: 'var(--neptune-emerald)' }}>
-                {new Date(clock.currentStatutoryDeadline).toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' })}
-              </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
-                Officer must reply by this date
-              </div>
-            </div>
           )}
+
+          <button
+            onClick={handleDownloadRtiDocument}
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}
+          >
+            <Download size={14} style={{ color: 'var(--neptune-emerald)' }} />
+            <span>Download Form 'A' (PDF/Text)</span>
+          </button>
+
+          <button
+            onClick={() => setLogisticsOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}
+          >
+            <Truck size={14} style={{ color: 'var(--neptune-amber)' }} />
+            <span>Track Speed Post</span>
+          </button>
+
+          <button
+            onClick={() => setNoticeScannerOpen(true)}
+            className="btn btn-secondary btn-sm"
+            style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}
+          >
+            <Camera size={14} style={{ color: 'var(--neptune-cobalt)' }} />
+            <span>Upload Officer's Reply</span>
+          </button>
         </div>
 
-        {/* 4-Step Statutory Progression */}
-        <div style={{ marginTop: '1.25rem', paddingTop: '1.1rem', borderTop: '1px solid var(--neptune-border-card)' }}>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '0.75rem' }}>
-            <div style={{ background: 'var(--neptune-bg-elevated)', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1px solid var(--neptune-emerald)' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--neptune-emerald)' }}>✓ 1. Filed & Sealed</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', marginTop: 2 }}>Submitted with ₹10 statutory fee</div>
-            </div>
-            <div style={{ background: 'var(--neptune-bg-elevated)', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1px solid var(--neptune-emerald)' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--neptune-emerald)' }}>✓ 2. Delivered to Office</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', marginTop: 2 }}>Delivered to CPIO desk</div>
-            </div>
-            <div style={{ background: 'var(--neptune-bg-elevated)', padding: '0.65rem 0.85rem', borderRadius: 10, border: `1px solid ${clock.isOverdue ? 'var(--neptune-crimson)' : 'var(--neptune-amber)'}` }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: clock.isOverdue ? 'var(--neptune-crimson)' : 'var(--neptune-amber)' }}>
-                {clock.isOverdue ? '⚠️ 3. 30 Days Expired' : `⏳ 3. Under Review (Day ${30 - clock.daysRemaining})`}
+        {/* 3. Clean Disclosure Accordions (Zero Clutter) */}
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.5rem' }}>
+          {/* Accordion 1: Questions Asked */}
+          <div style={{
+            border: '1px solid var(--neptune-border-card)',
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}>
+            <button
+              onClick={() => setShowQuestions(!showQuestions)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                background: 'var(--neptune-bg-surface)',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 700,
+                color: 'var(--neptune-text-primary)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <FileText size={16} style={{ color: 'var(--neptune-emerald)' }} />
+                <span>Questions Asked to Government ({dossier.queryBlocks.length} Queries)</span>
               </div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', marginTop: 2 }}>
-                {clock.isOverdue ? 'Officer failed to provide records' : 'Compiling official records'}
+              {showQuestions ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+
+            {showQuestions && (
+              <div style={{ padding: '1rem', background: 'var(--neptune-bg-elevated)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                {dossier.queryBlocks.map(block => (
+                  <div key={block.id} style={{ background: 'var(--neptune-bg-surface)', padding: '0.75rem 1rem', borderRadius: 8, border: '1px solid var(--neptune-border-card)' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
+                      <span className="badge badge-emerald" style={{ fontSize: '0.64rem' }}>
+                        Question #{block.pointNumber}
+                      </span>
+                      <button
+                        onClick={() => handleToggleTts(block.id, block.certifiedQueryText)}
+                        className="btn btn-secondary btn-sm"
+                        style={{ padding: '2px 6px', fontSize: '0.72rem' }}
+                      >
+                        {speakingBlockId === block.id ? <VolumeX size={12} /> : <Volume2 size={12} style={{ color: 'var(--neptune-emerald)' }} />}
+                        <span>{speakingBlockId === block.id ? 'Stop' : 'Listen'}</span>
+                      </button>
+                    </div>
+                    <div style={{ fontSize: '0.86rem', color: 'var(--neptune-text-primary)', lineHeight: 1.45 }}>
+                      {block.certifiedQueryText}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </div>
-            <div style={{ background: 'var(--neptune-bg-elevated)', padding: '0.65rem 0.85rem', borderRadius: 10, border: '1px solid var(--neptune-border-card)' }}>
-              <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--neptune-text-secondary)' }}>4. Resolution / Appeal</div>
-              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)', marginTop: 2 }}>Records furnished or First Appeal</div>
-            </div>
+            )}
           </div>
-        </div>
-      </div>
 
-      {/* 3. Case Navigation Tabs */}
-      <div style={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: '0.5rem',
-        borderBottom: '1px solid var(--neptune-border-card)',
-        paddingBottom: '0.25rem',
-      }}>
-        <button
-          onClick={() => setActiveTab('questions')}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: activeTab === 'questions' ? 'var(--neptune-emerald)' : 'var(--neptune-text-secondary)',
-            borderBottom: activeTab === 'questions' ? '2px solid var(--neptune-emerald)' : '2px solid transparent',
-            padding: '0.6rem 1rem',
-            fontSize: '0.88rem',
-            fontWeight: activeTab === 'questions' ? 700 : 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <FileText size={16} />
-          <span>Official Questions Asked ({dossier.queryBlocks.length})</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('timeline')}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: activeTab === 'timeline' ? 'var(--neptune-emerald)' : 'var(--neptune-text-secondary)',
-            borderBottom: activeTab === 'timeline' ? '2px solid var(--neptune-emerald)' : '2px solid transparent',
-            padding: '0.6rem 1rem',
-            fontSize: '0.88rem',
-            fontWeight: activeTab === 'timeline' ? 700 : 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <Truck size={16} />
-          <span>Postal Delivery & Events</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('evidence')}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: activeTab === 'evidence' ? 'var(--neptune-emerald)' : 'var(--neptune-text-secondary)',
-            borderBottom: activeTab === 'evidence' ? '2px solid var(--neptune-emerald)' : '2px solid transparent',
-            padding: '0.6rem 1rem',
-            fontSize: '0.88rem',
-            fontWeight: activeTab === 'evidence' ? 700 : 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-          }}
-        >
-          <ShieldCheck size={16} />
-          <span>Legal Proof (BSA 2023)</span>
-        </button>
-
-        <button
-          onClick={() => setActiveTab('advocate')}
-          style={{
-            border: 'none',
-            background: 'transparent',
-            color: activeTab === 'advocate' ? 'var(--neptune-cobalt)' : 'var(--neptune-text-tertiary)',
-            borderBottom: activeTab === 'advocate' ? '2px solid var(--neptune-cobalt)' : '2px solid transparent',
-            padding: '0.6rem 1rem',
-            fontSize: '0.88rem',
-            fontWeight: activeTab === 'advocate' ? 700 : 500,
-            cursor: 'pointer',
-            display: 'flex',
-            alignItems: 'center',
-            gap: 6,
-            marginLeft: 'auto',
-          }}
-        >
-          <Scale size={16} />
-          <span>⚖️ Advocate & Appeal Tools</span>
-        </button>
-      </div>
-
-      {/* 4. Tab Content Panels */}
-
-      {/* TAB 1: QUESTIONS ASKED */}
-      {activeTab === 'questions' && (
-        <div style={{ display: 'grid', gridTemplateColumns: 'minmax(360px, 1.4fr) minmax(260px, 1fr)', gap: '1.25rem' }}>
-          {/* Query list */}
-          <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Certified Record Queries</h3>
-                <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
-                  Official questions submitted under Section 2(f) & Section 6(1) of the RTI Act
-                </div>
+          {/* Accordion 2: Legal Evidence & BSA 2023 Seal */}
+          <div style={{
+            border: '1px solid var(--neptune-border-card)',
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}>
+            <button
+              onClick={() => setShowEvidence(!showEvidence)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                background: 'var(--neptune-bg-surface)',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 700,
+                color: 'var(--neptune-text-primary)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <ShieldCheck size={16} style={{ color: 'var(--neptune-emerald)' }} />
+                <span>Legal Proof & Section 63 BSA Digital Seal</span>
               </div>
-              <button
-                onClick={handleDownloadRtiDocument}
-                className="btn btn-secondary btn-sm"
-                style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 700 }}
-              >
-                <Download size={14} style={{ color: 'var(--neptune-emerald)' }} />
-                <span>Download Form 'A'</span>
-              </button>
-            </div>
+              {showEvidence ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              {dossier.queryBlocks.map(block => (
-                <div
-                  key={block.id}
-                  style={{
-                    background: 'var(--neptune-bg-elevated)',
-                    border: '1px solid var(--neptune-border-card)',
-                    borderRadius: 12,
-                    padding: '1rem',
-                  }}
-                >
-                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 8 }}>
-                    <span className="badge badge-emerald" style={{ fontSize: '0.68rem', fontWeight: 700 }}>
-                      Question #{block.pointNumber}
-                    </span>
+            {showEvidence && (
+              <div style={{ padding: '1rem', background: 'var(--neptune-bg-elevated)', display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+                <div>
+                  <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700 }}>
+                    Merkle Master Root Hash (Bharatiya Sakshya Adhiniyam 2023)
+                  </div>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
+                    <code style={{ fontSize: '0.82rem', color: 'var(--neptune-emerald)', fontWeight: 700, wordBreak: 'break-all' }}>
+                      {dossier.merkleRootHash}
+                    </code>
                     <button
-                      onClick={() => handleToggleTts(block.id, block.certifiedQueryText)}
-                      className="btn btn-secondary btn-sm"
-                      style={{ padding: '3px 8px', fontSize: '0.74rem' }}
+                      onClick={() => handleCopy(dossier.merkleRootHash, 'merkle')}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--neptune-text-tertiary)' }}
                     >
-                      {speakingBlockId === block.id ? <VolumeX size={13} /> : <Volume2 size={13} style={{ color: 'var(--neptune-emerald)' }} />}
-                      <span>{speakingBlockId === block.id ? 'Stop' : 'Listen (सुनें)'}</span>
+                      {copiedField === 'merkle' ? <Check size={13} style={{ color: 'var(--neptune-emerald)' }} /> : <Copy size={13} />}
                     </button>
                   </div>
-                  <div style={{ fontSize: '0.92rem', color: 'var(--neptune-text-primary)', lineHeight: 1.5 }}>
-                    {block.certifiedQueryText}
+                </div>
+
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 8, marginTop: 4 }}>
+                  <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)' }}>
+                    ✓ Admissible before High Courts & Central Information Commission
                   </div>
-                </div>
-              ))}
-            </div>
-
-            <div style={{
-              background: 'var(--neptune-badge-cobalt-bg)',
-              border: '1px solid var(--neptune-badge-cobalt-border)',
-              borderRadius: 10,
-              padding: '0.75rem 1rem',
-              fontSize: '0.8rem',
-              color: 'var(--neptune-badge-cobalt-text)',
-            }}>
-              💡 <strong>Statutory Power:</strong> Government officers are legally obligated to provide certified physical records or inspectable log extracts under Section 2(f). They cannot dismiss these requests with oral excuses.
-            </div>
-          </div>
-
-          {/* Citizen Quick Actions Sidebar */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
-              <h3 style={{ margin: 0, fontSize: '1rem', fontWeight: 700 }}>Quick Actions</h3>
-
-              <button
-                onClick={handleDownloadRtiDocument}
-                className="btn btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, padding: '0.75rem 1rem' }}
-              >
-                <Download size={18} style={{ color: 'var(--neptune-emerald)' }} />
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.86rem' }}>Download Official RTI (PDF/Text)</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)' }}>Save or print official Form 'A' copy</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => setLogisticsOpen(true)}
-                className="btn btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, padding: '0.75rem 1rem' }}
-              >
-                <Truck size={18} style={{ color: 'var(--neptune-amber)' }} />
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.86rem' }}>Track Postal Speed Post</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)' }}>CEPT Consignment: {dossier.postalBarcode || 'ED918237461IN'}</div>
-                </div>
-              </button>
-
-              <button
-                onClick={() => setNoticeScannerOpen(true)}
-                className="btn btn-secondary"
-                style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, padding: '0.75rem 1rem' }}
-              >
-                <Camera size={18} style={{ color: 'var(--neptune-cyan)' }} />
-                <div style={{ textAlign: 'left' }}>
-                  <div style={{ fontWeight: 700, fontSize: '0.86rem' }}>Upload Reply / Notice Received</div>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)' }}>Scan photo of officer's response</div>
-                </div>
-              </button>
-
-              {clock.isOverdue && (
-                <button
-                  onClick={() => setIsAppealModalOpen(true)}
-                  className="btn btn-danger"
-                  style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', gap: 10, padding: '0.75rem 1rem' }}
-                >
-                  <Scale size={18} />
-                  <div style={{ textAlign: 'left' }}>
-                    <div style={{ fontWeight: 700, fontSize: '0.86rem' }}>File Free First Appeal (1-Tap)</div>
-                    <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.85)' }}>Section 19(1) deemed refusal appeal</div>
-                  </div>
-                </button>
-              )}
-            </div>
-
-            {/* Target Authority Address Card */}
-            <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
-              <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700 }}>
-                Target Department Address
-              </div>
-              <div style={{ fontSize: '0.92rem', fontWeight: 800 }}>{dossier.targetAuthority.canonicalName}</div>
-              <div style={{ fontSize: '0.82rem', color: 'var(--neptune-text-secondary)', lineHeight: 1.4 }}>
-                {dossier.targetAuthority.cpioDesignation}<br />
-                {dossier.targetAuthority.officeAddress}<br />
-                PIN: {dossier.targetAuthority.pincode}
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* TAB 2: POSTAL DELIVERY & TIMELINE */}
-      {activeTab === 'timeline' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="neptune-card">
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1rem', flexWrap: 'wrap', gap: 8 }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>India Post CEPT Tracking & Statutory Milestones</h3>
-                <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: 'var(--neptune-text-secondary)' }}>
-                  Live delivery synchronization with Department of Posts and statutory clock events.
-                </p>
-              </div>
-              <button onClick={() => setLogisticsOpen(true)} className="btn btn-secondary btn-sm" style={{ fontWeight: 600 }}>
-                <Truck size={14} style={{ color: 'var(--neptune-amber)' }} />
-                <span>Open Detailed Logistics Modal</span>
-              </button>
-            </div>
-            <StatutoryTimeline
-              dossier={dossier}
-              events={events}
-              onTriggerAppeal={() => setIsAppealModalOpen(true)}
-            />
-          </div>
-        </div>
-      )}
-
-      {/* TAB 3: LEGAL EVIDENCE (BSA 2023) */}
-      {activeTab === 'evidence' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>
-                  Bharatiya Sakshya Adhiniyam (BSA) 2023 Digital Evidence Seal
-                </h3>
-                <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: 'var(--neptune-text-secondary)' }}>
-                  Certified electronic record certificate issued pursuant to Section 63 of BSA 2023.
-                </p>
-              </div>
-              <button onClick={() => setView('vault')} className="btn btn-primary btn-sm" style={{ fontWeight: 700 }}>
-                <ShieldCheck size={15} />
-                <span>Open Evidence Vault</span>
-              </button>
-            </div>
-
-            <div style={{
-              background: 'var(--neptune-bg-elevated)',
-              border: '1px solid var(--neptune-border-card)',
-              borderRadius: 12,
-              padding: '1.1rem',
-              display: 'flex',
-              flexDirection: 'column',
-              gap: '0.75rem',
-            }}>
-              <div>
-                <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700 }}>
-                  Merkle Master Root Hash
-                </div>
-                <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginTop: 4 }}>
-                  <code style={{ fontSize: '0.84rem', color: 'var(--neptune-emerald)', fontWeight: 700, wordBreak: 'break-all' }}>
-                    {dossier.merkleRootHash}
-                  </code>
-                  <button
-                    onClick={() => handleCopy(dossier.merkleRootHash, 'merkle')}
-                    style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--neptune-text-tertiary)', padding: 2 }}
-                  >
-                    {copiedField === 'merkle' ? <Check size={14} style={{ color: 'var(--neptune-emerald)' }} /> : <Copy size={14} />}
+                  <button onClick={() => setView('vault')} className="btn btn-secondary btn-sm" style={{ fontSize: '0.76rem' }}>
+                    Open Evidence Vault →
                   </button>
                 </div>
               </div>
+            )}
+          </div>
 
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(240px, 1fr))', gap: '0.75rem', marginTop: 4 }}>
-                <div style={{ background: 'var(--neptune-bg-card)', padding: '0.75rem', borderRadius: 8, border: '1px solid var(--neptune-border-card)' }}>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)' }}>Aadhaar Identity Masking</div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--neptune-emerald)', marginTop: 2 }}>DPDP 2023 Section 8 Protected</div>
-                </div>
-                <div style={{ background: 'var(--neptune-bg-card)', padding: '0.75rem', borderRadius: 8, border: '1px solid var(--neptune-border-card)' }}>
-                  <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-tertiary)' }}>Court Admissibility</div>
-                  <div style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--neptune-cobalt)', marginTop: 2 }}>All High Courts & CIC</div>
+          {/* Accordion 3: CPIO Historical Radar & Advocate Tools */}
+          <div style={{
+            border: '1px solid var(--neptune-border-card)',
+            borderRadius: 10,
+            overflow: 'hidden',
+          }}>
+            <button
+              onClick={() => setShowAdvocateRadar(!showAdvocateRadar)}
+              style={{
+                width: '100%',
+                padding: '0.75rem 1rem',
+                background: 'var(--neptune-bg-surface)',
+                border: 'none',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'space-between',
+                cursor: 'pointer',
+                fontSize: '0.86rem',
+                fontWeight: 700,
+                color: 'var(--neptune-text-primary)',
+              }}
+            >
+              <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
+                <Scale size={16} style={{ color: 'var(--neptune-cobalt)' }} />
+                <span>CPIO Historical Radar & Appellate Pleadings (Advocate Tools)</span>
+              </div>
+              {showAdvocateRadar ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+            </button>
+
+            {showAdvocateRadar && (
+              <div style={{ padding: '1rem', background: 'var(--neptune-bg-elevated)', display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                <CpioDispositionRadar
+                  authorityName={dossier.targetAuthority.canonicalName}
+                  cpioName={dossier.targetAuthority.cpioDesignation}
+                  resistanceScore={dossier.targetAuthority.complianceRating ? 100 - dossier.targetAuthority.complianceRating : 65}
+                />
+                <div style={{ display: 'flex', gap: 8, flexWrap: 'wrap' }}>
+                  <button onClick={() => setIsAppealModalOpen(true)} className="btn btn-secondary btn-sm">
+                    Draft 1st Appeal (FAA)
+                  </button>
+                  <button onClick={() => setCicAppealOpen(true)} className="btn btn-primary btn-sm">
+                    Draft CIC 2nd Appeal Pleading
+                  </button>
                 </div>
               </div>
-            </div>
+            )}
           </div>
         </div>
-      )}
-
-      {/* TAB 4: ADVOCATE TOOLS & CPIO RADAR */}
-      {activeTab === 'advocate' && (
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-          <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
-              <div>
-                <h3 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 800 }}>Advocate Litigation Telemetry & CPIO Radar</h3>
-                <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: 'var(--neptune-text-secondary)' }}>
-                  Historical compliance metrics, Section 20(1) penalty calculations, and formal appellate drafting.
-                </p>
-              </div>
-              <div style={{ display: 'flex', gap: 8 }}>
-                <button onClick={() => setIsAppealModalOpen(true)} className="btn btn-secondary btn-sm" style={{ fontWeight: 600 }}>
-                  <Scale size={14} />
-                  <span>Draft 1st Appeal (FAA)</span>
-                </button>
-                <button onClick={() => setCicAppealOpen(true)} className="btn btn-primary btn-sm" style={{ fontWeight: 700 }}>
-                  <Scale size={14} />
-                  <span>Draft CIC 2nd Appeal</span>
-                </button>
-              </div>
-            </div>
-
-            {/* CPIO Disposition Radar */}
-            <CpioDispositionRadar
-              authorityName={dossier.targetAuthority.canonicalName}
-              cpioName={dossier.targetAuthority.cpioDesignation}
-              resistanceScore={dossier.targetAuthority.complianceRating ? 100 - dossier.targetAuthority.complianceRating : 65}
-            />
-          </div>
-        </div>
-      )}
+      </div>
 
       {/* Modals Suite */}
       <AppealModal

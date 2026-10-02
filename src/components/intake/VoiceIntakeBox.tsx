@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useNeptuneStore } from '../../store/useNeptuneStore.js';
 import { Section2fCompiler } from '../../services/cfgCompiler.js';
-import { NeptuneApiClient } from '../../services/api.js';
-import { ICitizenRTIDossier, SubmissionChannel, IQueryBlock } from '../../types/dossier.js';
+import { ICitizenRTIDossier, SubmissionChannel } from '../../types/dossier.js';
 import { ttsEngine } from '../../services/ttsService.js';
 import {
   Mic,
@@ -11,17 +10,17 @@ import {
   Shield,
   Send,
   CheckCircle2,
-  AlertCircle,
   FileText,
   ArrowRight,
   ArrowLeft,
-  Truck,
   Volume2,
   VolumeX,
   HelpCircle,
   Clock,
   Landmark,
   Check,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
@@ -31,11 +30,10 @@ export const VoiceIntakeBox: React.FC = () => {
 
   const [isRecording, setIsRecording] = useState(false);
   const [recordingSeconds, setRecordingSeconds] = useState(0);
-  const [grievanceText, setGrievanceText] = useState(
-    'राशन कार्ड 6 महीने से बंद कर दिया है, कोटेदार अनाज नहीं दे रहा और बोलता है ऊपर से नाम कट गया है।'
-  );
+  const [grievanceText, setGrievanceText] = useState('');
   const [categoryKey, setCategoryKey] = useState('RATION_DELAY');
-  const [specificId, setSpecificId] = useState('राशन कार्ड सं. 2149021882');
+  const [specificId, setSpecificId] = useState('');
+  const [showIdInput, setShowIdInput] = useState(false);
   const [selectedChannel, setSelectedChannel] = useState<SubmissionChannel>('CENTRAL_ONLINE');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [statusMessage, setStatusMessage] = useState<string | null>(null);
@@ -44,8 +42,9 @@ export const VoiceIntakeBox: React.FC = () => {
   const canvasRef = useRef<HTMLCanvasElement | null>(null);
   const animationFrameRef = useRef<number | null>(null);
 
-  // Audio Waveform Visualizer loop
+  // Audio Waveform Visualizer loop (active when recording)
   useEffect(() => {
+    if (!isRecording) return;
     const canvas = canvasRef.current;
     if (!canvas) return;
     const ctx = canvas.getContext('2d');
@@ -58,27 +57,22 @@ export const VoiceIntakeBox: React.FC = () => {
       const height = canvas.height;
       const centerY = height / 2;
 
-      ctx.strokeStyle = isRecording ? '#10b981' : '#334155';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#059669';
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
 
-      const bars = 48;
+      const bars = 40;
       const step = width / bars;
 
       for (let i = 0; i < bars; i++) {
         const x = i * step;
-        let amplitude = 4;
-        if (isRecording) {
-          amplitude = Math.sin(phase + i * 0.35) * 16 + Math.cos(phase * 1.5 + i * 0.2) * 8;
-        } else {
-          amplitude = Math.sin(phase * 0.4 + i * 0.2) * 3;
-        }
+        const amplitude = Math.sin(phase + i * 0.35) * 14 + Math.cos(phase * 1.5 + i * 0.2) * 7;
         ctx.moveTo(x, centerY - amplitude);
         ctx.lineTo(x, centerY + amplitude);
       }
       ctx.stroke();
 
-      phase += isRecording ? 0.15 : 0.03;
+      phase += 0.15;
       animationFrameRef.current = requestAnimationFrame(render);
     };
 
@@ -87,7 +81,7 @@ export const VoiceIntakeBox: React.FC = () => {
     return () => {
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current);
     };
-  }, [isRecording, currentStep]);
+  }, [isRecording]);
 
   // Recording timer
   useEffect(() => {
@@ -101,7 +95,8 @@ export const VoiceIntakeBox: React.FC = () => {
   }, [isRecording]);
 
   // Real-time CFG Compilation
-  const compilationResult = Section2fCompiler.compile(grievanceText, categoryKey, specificId);
+  const activeNarrative = grievanceText.trim() || 'राशन कार्ड 6 महीने से बंद कर दिया है, कोटेदार अनाज नहीं दे रहा और बोलता है ऊपर से नाम कट गया है।';
+  const compilationResult = Section2fCompiler.compile(activeNarrative, categoryKey, specificId);
 
   // Match target authority
   const targetAuthority = authorities.find(a =>
@@ -115,22 +110,30 @@ export const VoiceIntakeBox: React.FC = () => {
   const handleToggleRecording = () => {
     if (!isRecording) {
       setIsRecording(true);
-      // Simulate live speech recognition in Hindi/vernacular
+      // Simulate real-time vernacular speech-to-text
       setTimeout(() => {
         setGrievanceText('कोटेदार ने बोला कि सर्वर डाउन है और पिछले 3 महीने का राशन लैप्स हो गया। मुझे ई-पॉस सर्वर लॉग और भौतिक रजिस्टर चाहिए।');
         setCategoryKey('RATION_DELAY');
+        setIsRecording(false);
       }, 3500);
     } else {
       setIsRecording(false);
     }
   };
 
+  const handleApplyPreset = (text: string, catKey: string, sampleId: string) => {
+    setGrievanceText(text);
+    setCategoryKey(catKey);
+    setSpecificId(sampleId);
+    setShowIdInput(true);
+  };
+
   const handleDispatch = async () => {
     setIsSubmitting(true);
-    setStatusMessage('Sealing application with Section 63 BSA cryptographic proof...');
+    setStatusMessage('Applying Section 63 BSA cryptographic evidence seal...');
 
     setTimeout(() => {
-      setStatusMessage('Registering application and initiating 30-day statutory clock...');
+      setStatusMessage('Registering application and initiating 30-day statutory countdown...');
     }, 700);
 
     setTimeout(() => {
@@ -145,7 +148,7 @@ export const VoiceIntakeBox: React.FC = () => {
         filingChannel: selectedChannel,
         govRegistrationNumber: regNo,
         postalBarcode: barcode,
-        rawGrievanceNarrative: grievanceText,
+        rawGrievanceNarrative: grievanceText || activeNarrative,
         categoryKey,
         queryBlocks: compilationResult.queryBlocks,
         totalCharacterCount: compilationResult.totalCharacterCount,
@@ -175,279 +178,225 @@ export const VoiceIntakeBox: React.FC = () => {
         particleCount: 80,
         spread: 70,
         origin: { y: 0.6 },
-        colors: ['#10b981', '#38bdf8', '#fbbf24'],
+        colors: ['#059669', '#2563eb', '#f59e0b'],
       });
     }, 1600);
   };
 
   return (
-    <div style={{ maxWidth: 860, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
-      {/* Top Header & 3-Step Guided Progress Stepper */}
+    <div style={{ maxWidth: 780, margin: '0 auto', display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
+      {/* 3-Step Guided Breadcrumb Stepper */}
       <div style={{
-        background: 'var(--neptune-bg-card)',
-        border: '1px solid var(--neptune-border-card)',
-        borderRadius: 16,
-        padding: '1.25rem 1.5rem',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        gap: '0.75rem',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem', marginBottom: '1.25rem' }}>
-          <div>
-            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, display: 'flex', alignItems: 'center', gap: 8 }}>
-              <Sparkles size={22} style={{ color: 'var(--neptune-emerald)' }} />
-              <span>Draft Your RTI Application</span>
-            </h2>
-            <p style={{ margin: '4px 0 0', fontSize: '0.84rem', color: 'var(--neptune-text-secondary)' }}>
-              Explain your issue in plain words. We automatically generate official legal questions that government officers must answer in 30 days.
-            </p>
-          </div>
-          <button
-            onClick={() => setHelpOpen(true)}
-            className="btn btn-secondary btn-sm"
-            style={{ display: 'flex', alignItems: 'center', gap: 6, fontSize: '0.78rem' }}
-          >
-            <HelpCircle size={14} style={{ color: 'var(--neptune-emerald-light)' }} />
-            <span>How RTI Works (FAQ)</span>
-          </button>
-        </div>
-
-        {/* 3-Step Guided Breadcrumb Stepper */}
-        <div style={{
-          display: 'grid',
-          gridTemplateColumns: 'repeat(3, 1fr)',
-          gap: '0.5rem',
-          background: 'var(--neptune-bg-surface)',
-          padding: '0.35rem',
-          borderRadius: 12,
-          border: '1px solid var(--neptune-border-card)',
-        }}>
-          <button
-            onClick={() => setCurrentStep(1)}
-            style={{
-              border: 'none',
-              background: currentStep === 1 ? 'var(--neptune-bg-elevated)' : 'transparent',
-              color: currentStep === 1 ? 'var(--neptune-emerald-light)' : 'var(--neptune-text-secondary)',
-              borderRadius: 8,
-              padding: '0.55rem 0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              cursor: 'pointer',
-              transition: 'var(--neptune-transition)',
-            }}
-          >
-            <span style={{
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
-              background: currentStep >= 1 ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-            }}>
-              {currentStep > 1 ? <Check size={12} /> : '1'}
-            </span>
-            <span>1. Describe Issue</span>
-          </button>
-
-          <button
-            onClick={() => { if (grievanceText.trim()) setCurrentStep(2); }}
-            style={{
-              border: 'none',
-              background: currentStep === 2 ? 'var(--neptune-bg-elevated)' : 'transparent',
-              color: currentStep === 2 ? 'var(--neptune-cobalt)' : 'var(--neptune-text-secondary)',
-              borderRadius: 8,
-              padding: '0.55rem 0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              cursor: grievanceText.trim() ? 'pointer' : 'not-allowed',
-              opacity: grievanceText.trim() ? 1 : 0.6,
-              transition: 'var(--neptune-transition)',
-            }}
-          >
-            <span style={{
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
-              background: currentStep >= 2 ? 'var(--neptune-cobalt)' : 'var(--neptune-border-card)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-            }}>
-              {currentStep > 2 ? <Check size={12} /> : '2'}
-            </span>
-            <span>2. Legal Questions</span>
-          </button>
-
-          <button
-            onClick={() => { if (grievanceText.trim()) setCurrentStep(3); }}
-            style={{
-              border: 'none',
-              background: currentStep === 3 ? 'var(--neptune-bg-elevated)' : 'transparent',
-              color: currentStep === 3 ? 'var(--neptune-amber)' : 'var(--neptune-text-secondary)',
-              borderRadius: 8,
-              padding: '0.55rem 0.75rem',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              gap: 8,
-              fontSize: '0.82rem',
-              fontWeight: 700,
-              cursor: grievanceText.trim() ? 'pointer' : 'not-allowed',
-              opacity: grievanceText.trim() ? 1 : 0.6,
-              transition: 'var(--neptune-transition)',
-            }}
-          >
-            <span style={{
-              width: 22,
-              height: 22,
-              borderRadius: '50%',
-              background: currentStep === 3 ? 'var(--neptune-amber)' : 'var(--neptune-border-card)',
-              color: '#ffffff',
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-              fontSize: '0.72rem',
-              fontWeight: 800,
-            }}>
-              3
-            </span>
-            <span>3. Submit & Track</span>
-          </button>
-        </div>
+        {[
+          { step: 1, label: '1. Describe Issue' },
+          { step: 2, label: '2. Review Questions' },
+          { step: 3, label: '3. Submit & Track' },
+        ].map((s) => {
+          const isActive = currentStep === s.step;
+          const isDone = currentStep > s.step;
+          return (
+            <button
+              key={s.step}
+              onClick={() => {
+                if (s.step === 1 || grievanceText.trim() || currentStep >= s.step) {
+                  setCurrentStep(s.step as any);
+                }
+              }}
+              style={{
+                border: 'none',
+                background: 'transparent',
+                display: 'flex',
+                alignItems: 'center',
+                gap: 8,
+                cursor: (s.step === 1 || grievanceText.trim()) ? 'pointer' : 'default',
+                padding: '0.4rem 0.6rem',
+              }}
+            >
+              <span style={{
+                width: 24,
+                height: 24,
+                borderRadius: '50%',
+                background: isDone ? 'var(--neptune-emerald)' : isActive ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)',
+                color: '#ffffff',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontSize: '0.75rem',
+                fontWeight: 800,
+                transition: 'var(--neptune-transition)',
+              }}>
+                {isDone ? <Check size={13} /> : s.step}
+              </span>
+              <span style={{
+                fontSize: '0.86rem',
+                fontWeight: isActive ? 700 : 500,
+                color: isActive ? 'var(--neptune-text-primary)' : 'var(--neptune-text-tertiary)',
+              }}>
+                {s.label}
+              </span>
+            </button>
+          );
+        })}
       </div>
 
       {/* ========================================================================= */}
       {/* STEP 1: DESCRIBE YOUR ISSUE                                               */}
       {/* ========================================================================= */}
       {currentStep === 1 && (
-        <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.5rem' }}>
-          {/* Topic Pills */}
+        <div className="neptune-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <label style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--neptune-text-primary)', display: 'block', marginBottom: 8 }}>
-              Select Topic (समस्या का विषय चुनें):
-            </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem' }}>
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--neptune-text-primary)' }}>
+              What government problem are you facing?
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '0.86rem', color: 'var(--neptune-text-secondary)', lineHeight: 1.5 }}>
+              Type or speak what happened. We automatically draft certified Section 2(f) questions that officers must legally answer in 30 days.
+            </p>
+          </div>
+
+          {/* Quick Inspiration Presets */}
+          <div>
+            <div style={{ fontSize: '0.74rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700, marginBottom: 6 }}>
+              Quick Templates (समस्या का विषय):
+            </div>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
               {[
-                { key: 'RATION_DELAY', label: '🌾 राशन (Ration / PDS)' },
-                { key: 'ROAD_POTHOLE', label: '🛣️ सड़क (Roads & PWD)' },
-                { key: 'PENSION_DELAY', label: '👵 पेंशन (Pension / EPFO)' },
-                { key: 'LAND_RECORDS', label: '🚜 जमीन (Land & Mutation)' },
-                { key: 'POLICE_FIR', label: '👮 पुलिस (Police FIR)' },
-              ].map(cat => (
+                { label: '🌾 राशन (Ration / PDS)', cat: 'RATION_DELAY', text: 'राशन कार्ड 6 महीने से बंद कर दिया है, कोटेदार अनाज नहीं दे रहा और बोलता है ऊपर से नाम कट गया है।', id: 'राशन कार्ड सं. 2149021882' },
+                { label: '👵 पेंशन (Pension Delay)', cat: 'PENSION_DELAY', text: 'वृद्धावस्था पेंशन पिछले 5 महीने से बैंक खाते में नहीं आ रही। समाज कल्याण विभाग में कोई सुनवाई नहीं हो रही।', id: 'पेंशन PPO: UP-2024-88412' },
+                { label: '🛣️ सड़क (Road Quality / PWD)', cat: 'ROAD_POTHOLE', text: 'गांव की मुख्य सड़क 2 महीने पहले बनी थी और पहली बारिश में टूट गई। ठेकेदार का विवरण और माप पुस्तिका चाहिए।', id: 'सड़क कार्य सं. PWD-2025-09' },
+                { label: '🚜 जमीन (Land Mutation)', cat: 'LAND_RECORDS', text: 'दाखिल-खारिज का आवेदन 8 महीने से लंबित है। लेखपाल रिपोर्ट नहीं लगा रहा।', id: 'आवेदन सं. REV-48192' },
+              ].map(p => (
                 <button
-                  key={cat.key}
-                  onClick={() => setCategoryKey(cat.key)}
-                  className={`btn btn-sm ${categoryKey === cat.key ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{ fontSize: '0.82rem', padding: '0.45rem 0.85rem', fontWeight: 600, borderRadius: 20 }}
+                  key={p.cat}
+                  onClick={() => handleApplyPreset(p.text, p.cat, p.id)}
+                  style={{
+                    background: categoryKey === p.cat && grievanceText === p.text ? 'var(--neptune-badge-emerald-bg)' : 'var(--neptune-bg-elevated)',
+                    border: `1px solid ${categoryKey === p.cat && grievanceText === p.text ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)'}`,
+                    color: categoryKey === p.cat && grievanceText === p.text ? 'var(--neptune-emerald)' : 'var(--neptune-text-secondary)',
+                    borderRadius: 20,
+                    padding: '0.35rem 0.75rem',
+                    fontSize: '0.78rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    transition: 'var(--neptune-transition)',
+                  }}
                 >
-                  {cat.label}
+                  {p.label}
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Voice Dictation Card with Live Waveform */}
+          {/* Unified Smart Input Card */}
           <div style={{
             background: 'var(--neptune-bg-surface)',
             border: '1px solid var(--neptune-border-card)',
-            borderRadius: 14,
-            padding: '1.1rem',
+            borderRadius: 12,
+            padding: '1rem',
             display: 'flex',
             flexDirection: 'column',
-            alignItems: 'center',
-            gap: '0.85rem',
+            gap: '0.75rem',
           }}>
-            <canvas ref={canvasRef} width={500} height={46} style={{ width: '100%', maxWidth: 500, height: 46 }} />
-
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: 8 }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.82rem', color: 'var(--neptune-text-secondary)' }}>
-                <span className={`status-dot ${isRecording ? 'emerald' : ''}`} />
-                <span>
-                  {isRecording
-                    ? `Recording voice in ${language} (00:${recordingSeconds.toString().padStart(2, '0')})... बोलिए`
-                    : 'Microphone Ready • बोलकर समस्या बताएं'}
-                </span>
+            {/* Live Audio Visualizer (Appears while recording) */}
+            {isRecording && (
+              <div style={{
+                background: 'var(--neptune-badge-emerald-bg)',
+                borderRadius: 8,
+                padding: '0.75rem',
+                display: 'flex',
+                flexDirection: 'column',
+                alignItems: 'center',
+                gap: 6,
+              }}>
+                <canvas ref={canvasRef} width={400} height={40} style={{ width: '100%', maxWidth: 400, height: 40 }} />
+                <div style={{ fontSize: '0.78rem', fontWeight: 700, color: 'var(--neptune-emerald)' }}>
+                  Recording voice in {language} (00:{recordingSeconds.toString().padStart(2, '0')})... बोलिए
+                </div>
               </div>
+            )}
 
-              <button
-                onClick={handleToggleRecording}
-                className={`btn ${isRecording ? 'btn-danger' : 'btn-primary'} btn-sm`}
-                style={{ borderRadius: 20, padding: '0.45rem 1.1rem', fontWeight: 700 }}
-              >
-                {isRecording ? <><MicOff size={15} /> Stop Recording</> : <><Mic size={15} /> Hold to Speak (बोलें)</>}
-              </button>
-            </div>
-          </div>
-
-          {/* Grievance Narrative Textarea */}
-          <div>
-            <label style={{ fontSize: '0.84rem', fontWeight: 700, color: 'var(--neptune-text-primary)', display: 'block', marginBottom: 6 }}>
-              Describe what happened in plain words (अपनी समस्या लिखें या बोलें):
-            </label>
             <textarea
               className="textarea-field"
               value={grievanceText}
               onChange={(e) => setGrievanceText(e.target.value)}
-              placeholder="वर्णन करें: क्या समस्या है, किस विभाग में और कब से रुकी हुई है..."
+              placeholder="वर्णन करें: क्या समस्या है, किस विभाग में और कब से रुकी हुई है... (e.g. My ration has been stopped for 3 months, or my pension application was not processed)"
               rows={4}
-              style={{ fontSize: '0.92rem', lineHeight: 1.5 }}
+              style={{
+                fontSize: '0.94rem',
+                lineHeight: 1.55,
+                border: 'none',
+                background: 'transparent',
+                padding: 0,
+                outline: 'none',
+                resize: 'vertical',
+              }}
             />
-          </div>
 
-          {/* Reference Identifier Input */}
-          <div>
-            <label style={{ fontSize: '0.82rem', fontWeight: 600, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
-              Card No. / Application No. / File Reference (यदि कोई हो):
-            </label>
-            <input
-              type="text"
-              className="input-field"
-              value={specificId}
-              onChange={(e) => setSpecificId(e.target.value)}
-              placeholder="e.g. Ration Card No, Pension PPO, or complaint number"
-            />
-          </div>
+            {/* Bottom Bar inside input: Voice Mic + Status */}
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'space-between',
+              borderTop: '1px solid var(--neptune-border-card)',
+              paddingTop: '0.65rem',
+              flexWrap: 'wrap',
+              gap: 8,
+            }}>
+              <button
+                onClick={handleToggleRecording}
+                className={`btn ${isRecording ? 'btn-danger' : 'btn-secondary'} btn-sm`}
+                style={{ borderRadius: 20, padding: '0.35rem 0.85rem', fontWeight: 700, fontSize: '0.78rem' }}
+              >
+                {isRecording ? <><MicOff size={14} /> Stop Recording</> : <><Mic size={14} style={{ color: 'var(--neptune-emerald)' }} /> 🎙️ Hold to Speak (बोलें)</>}
+              </button>
 
-          {/* Privacy Note */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 10,
-            background: 'rgba(16, 185, 129, 0.06)',
-            border: '1px solid rgba(16, 185, 129, 0.2)',
-            borderRadius: 10,
-            padding: '0.65rem 0.9rem',
-            fontSize: '0.78rem',
-            color: 'var(--neptune-text-secondary)',
-          }}>
-            <Shield size={18} style={{ color: 'var(--neptune-emerald)', flexShrink: 0 }} />
-            <div>
-              <strong style={{ color: 'var(--neptune-emerald-light)' }}>100% Privacy Shield:</strong> Aadhaar numbers and mobile numbers are automatically masked before any officer sees them.
+              <div style={{ display: 'flex', alignItems: 'center', gap: 10, fontSize: '0.75rem', color: 'var(--neptune-text-tertiary)' }}>
+                <span>🛡️ Aadhaar & Mobile Masked</span>
+                <span>•</span>
+                <span>{grievanceText.length} chars</span>
+              </div>
             </div>
+          </div>
+
+          {/* Optional Reference ID Toggle */}
+          <div>
+            {!showIdInput ? (
+              <button
+                onClick={() => setShowIdInput(true)}
+                style={{ background: 'none', border: 'none', padding: 0, color: 'var(--neptune-emerald)', fontSize: '0.8rem', fontWeight: 600, cursor: 'pointer', display: 'flex', alignItems: 'center', gap: 4 }}
+              >
+                <span>+ Add Reference / Card No. (Optional)</span>
+                <ChevronDown size={14} />
+              </button>
+            ) : (
+              <div>
+                <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 4 }}>
+                  Card No. / Application Reference No. (Optional):
+                </label>
+                <input
+                  type="text"
+                  className="input-field"
+                  value={specificId}
+                  onChange={(e) => setSpecificId(e.target.value)}
+                  placeholder="e.g. Ration Card No, Pension PPO, or FIR number"
+                  style={{ fontSize: '0.86rem', padding: '0.55rem 0.85rem' }}
+                />
+              </div>
+            )}
           </div>
 
           {/* Continue Button */}
           <button
-            onClick={() => {
-              if (grievanceText.trim()) setCurrentStep(2);
-            }}
+            onClick={() => setCurrentStep(2)}
             disabled={!grievanceText.trim()}
             className="btn btn-primary btn-lg"
             style={{ width: '100%', marginTop: '0.5rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700 }}
           >
-            <span>Generate Official RTI Questions (प्रश्न तैयार करें)</span>
+            <span>Review Official RTI Questions (प्रश्न देखें)</span>
             <ArrowRight size={18} />
           </button>
         </div>
@@ -457,18 +406,17 @@ export const VoiceIntakeBox: React.FC = () => {
       {/* STEP 2: REVIEW OFFICIAL LEGAL QUESTIONS                                    */}
       {/* ========================================================================= */}
       {currentStep === 2 && (
-        <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.5rem' }}>
+        <div className="neptune-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 8 }}>
             <div>
-              <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
-                Review Official RTI Questions (अधिकारी के पास जाने वाले प्रश्न)
-              </h3>
-              <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: 'var(--neptune-text-secondary)' }}>
-                These certified record queries (Section 2(f)) are legally binding. Officials cannot brush them off with oral excuses.
+              <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--neptune-text-primary)' }}>
+                Review Official RTI Questions
+              </h2>
+              <p style={{ margin: '4px 0 0', fontSize: '0.86rem', color: 'var(--neptune-text-secondary)' }}>
+                Government officers are legally required to provide certified records for each query below.
               </p>
             </div>
 
-            {/* Dialect Audio Readout Button */}
             <button
               onClick={() => {
                 if (isSpeakingDraft) {
@@ -483,22 +431,22 @@ export const VoiceIntakeBox: React.FC = () => {
               className="btn btn-secondary btn-sm"
               style={{ display: 'flex', alignItems: 'center', gap: 6, fontWeight: 600 }}
             >
-              {isSpeakingDraft ? <VolumeX size={15} /> : <Volume2 size={15} />}
+              {isSpeakingDraft ? <VolumeX size={14} /> : <Volume2 size={14} style={{ color: 'var(--neptune-emerald)' }} />}
               <span>{isSpeakingDraft ? 'Stop Audio' : '🔊 Listen (सुनें)'}</span>
             </button>
           </div>
 
           {/* Target Public Authority Card */}
           <div style={{
-            background: 'var(--neptune-bg-surface)',
+            background: 'var(--neptune-bg-elevated)',
             border: '1px solid var(--neptune-border-card)',
-            borderRadius: 12,
-            padding: '1rem',
+            borderRadius: 10,
+            padding: '0.85rem 1rem',
           }}>
-            <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700 }}>
+            <div style={{ fontSize: '0.72rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700 }}>
               Target Department & Office (संबंधित सरकारी विभाग)
             </div>
-            <div style={{ fontSize: '1.05rem', fontWeight: 800, color: 'var(--neptune-text-primary)', marginTop: 2 }}>
+            <div style={{ fontSize: '1rem', fontWeight: 800, color: 'var(--neptune-text-primary)', marginTop: 2 }}>
               {targetAuthority.canonicalName}
             </div>
             <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
@@ -507,22 +455,22 @@ export const VoiceIntakeBox: React.FC = () => {
           </div>
 
           {/* Generated Questions List */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.85rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
             {compilationResult.queryBlocks.map((block) => (
               <div
                 key={block.id}
                 style={{
-                  background: 'var(--neptune-bg-elevated)',
+                  background: 'var(--neptune-bg-surface)',
                   border: '1px solid var(--neptune-border-card)',
-                  borderRadius: 12,
-                  padding: '1rem',
+                  borderRadius: 10,
+                  padding: '0.85rem 1rem',
                 }}
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 6 }}>
-                  <span className="badge badge-cobalt" style={{ fontSize: '0.7rem', fontWeight: 700 }}>
+                  <span className="badge badge-emerald" style={{ fontSize: '0.68rem', fontWeight: 700 }}>
                     Question #{block.pointNumber}
                   </span>
-                  <span className="badge badge-emerald" style={{ fontSize: '0.65rem' }}>
+                  <span style={{ fontSize: '0.72rem', color: 'var(--neptune-emerald)', fontWeight: 600 }}>
                     ✓ Protected under Section 2(f)
                   </span>
                 </div>
@@ -531,28 +479,6 @@ export const VoiceIntakeBox: React.FC = () => {
                 </div>
               </div>
             ))}
-          </div>
-
-          {/* Word Budget & Masking Summary */}
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-            background: 'var(--neptune-bg-surface)',
-            border: '1px solid var(--neptune-border-card)',
-            borderRadius: 10,
-            padding: '0.65rem 1rem',
-            fontSize: '0.78rem',
-            color: 'var(--neptune-text-secondary)',
-            flexWrap: 'wrap',
-            gap: 6,
-          }}>
-            <div>
-              Character Count: <strong style={{ color: 'var(--neptune-emerald-light)' }}>{compilationResult.totalCharacterCount} / 2,800 Chars</strong> (Within Central Online Limit)
-            </div>
-            <div style={{ color: 'var(--neptune-emerald-light)', fontWeight: 600 }}>
-              ✓ DPDP 2023 Masking Applied
-            </div>
           </div>
 
           {/* Action Navigation */}
@@ -582,92 +508,92 @@ export const VoiceIntakeBox: React.FC = () => {
       {/* STEP 3: CHOOSE SUBMISSION METHOD & LAUNCH 30-DAY CLOCK                     */}
       {/* ========================================================================= */}
       {currentStep === 3 && (
-        <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.25rem', padding: '1.5rem' }}>
+        <div className="neptune-card" style={{ padding: '1.75rem', display: 'flex', flexDirection: 'column', gap: '1.25rem' }}>
           <div>
-            <h3 style={{ margin: 0, fontSize: '1.15rem', fontWeight: 800 }}>
-              Choose How to Send Your RTI (जमा करने का माध्यम चुनें)
-            </h3>
-            <p style={{ margin: '3px 0 0', fontSize: '0.8rem', color: 'var(--neptune-text-secondary)' }}>
-              Select whether you want to file digitally through the government portal or send a physical Speed Post package.
+            <h2 style={{ fontSize: '1.35rem', fontWeight: 800, margin: 0, color: 'var(--neptune-text-primary)' }}>
+              Choose How to File Your RTI
+            </h2>
+            <p style={{ margin: '4px 0 0', fontSize: '0.86rem', color: 'var(--neptune-text-secondary)' }}>
+              Select your preferred submission channel to start the official 30-day statutory countdown.
             </p>
           </div>
 
-          {/* Submission Channel Options */}
+          {/* Submission Options */}
           <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.85rem' }}>
-            {/* Option 1: Online */}
             <div
               onClick={() => setSelectedChannel('CENTRAL_ONLINE')}
               style={{
                 padding: '1.1rem 1.25rem',
-                borderRadius: 14,
+                borderRadius: 12,
                 border: `2px solid ${selectedChannel === 'CENTRAL_ONLINE' ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)'}`,
-                background: selectedChannel === 'CENTRAL_ONLINE' ? 'rgba(16, 185, 129, 0.1)' : 'var(--neptune-bg-surface)',
+                background: selectedChannel === 'CENTRAL_ONLINE' ? 'var(--neptune-badge-emerald-bg)' : 'var(--neptune-bg-surface)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 transition: 'var(--neptune-transition)',
-                boxShadow: selectedChannel === 'CENTRAL_ONLINE' ? 'var(--neptune-shadow-emerald)' : 'none',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: 'rgba(16, 185, 129, 0.15)',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'rgba(5, 150, 105, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--neptune-emerald)',
                   flexShrink: 0,
                 }}>
-                  <Send size={22} />
+                  <Send size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.98rem', fontWeight: 800 }}>🌐 Send Online via NIC Portal (₹10 Statutory Fee)</div>
+                  <div style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--neptune-text-primary)' }}>
+                    🌐 Send Online via NIC Portal (₹10 Statutory Fee)
+                  </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
-                    Instant e-filing with official government registration number & immediate 30-day statutory countdown.
+                    Instant e-filing with official government registration number & immediate 30-day countdown.
                   </div>
                 </div>
               </div>
               <CheckCircle2 size={20} style={{ color: selectedChannel === 'CENTRAL_ONLINE' ? 'var(--neptune-emerald)' : 'transparent', flexShrink: 0 }} />
             </div>
 
-            {/* Option 2: Speed Post */}
             <div
               onClick={() => setSelectedChannel('OFFLINE_SPEED_POST')}
               style={{
                 padding: '1.1rem 1.25rem',
-                borderRadius: 14,
+                borderRadius: 12,
                 border: `2px solid ${selectedChannel === 'OFFLINE_SPEED_POST' ? 'var(--neptune-emerald)' : 'var(--neptune-border-card)'}`,
-                background: selectedChannel === 'OFFLINE_SPEED_POST' ? 'rgba(16, 185, 129, 0.1)' : 'var(--neptune-bg-surface)',
+                background: selectedChannel === 'OFFLINE_SPEED_POST' ? 'var(--neptune-badge-emerald-bg)' : 'var(--neptune-bg-surface)',
                 cursor: 'pointer',
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'space-between',
                 transition: 'var(--neptune-transition)',
-                boxShadow: selectedChannel === 'OFFLINE_SPEED_POST' ? 'var(--neptune-shadow-emerald)' : 'none',
               }}
             >
               <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
                 <div style={{
-                  width: 44,
-                  height: 44,
-                  borderRadius: 12,
-                  background: 'rgba(245, 158, 11, 0.15)',
+                  width: 40,
+                  height: 40,
+                  borderRadius: 10,
+                  background: 'rgba(217, 119, 6, 0.15)',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
                   color: 'var(--neptune-amber)',
                   flexShrink: 0,
                 }}>
-                  <Truck size={22} />
+                  <FileText size={20} />
                 </div>
                 <div>
-                  <div style={{ fontSize: '0.98rem', fontWeight: 800 }}>📮 Send by Registered Speed Post (₹39 All-Inclusive)</div>
+                  <div style={{ fontSize: '0.96rem', fontWeight: 800, color: 'var(--neptune-text-primary)' }}>
+                    📮 Registered Speed Post + Indian Postal Order (₹39)
+                  </div>
                   <div style={{ fontSize: '0.78rem', color: 'var(--neptune-text-secondary)', marginTop: 2 }}>
-                    We print official Form 'A', attach a ₹10 Indian Postal Order (IPO), and mail it via India Post with tracking barcode.
+                    Physical physical package with ₹10 IPO and CEPT consignment tracking barcode.
                   </div>
                 </div>
               </div>
@@ -675,32 +601,23 @@ export const VoiceIntakeBox: React.FC = () => {
             </div>
           </div>
 
-          {/* Statutory Guarantee Explainer Box */}
+          {/* Privacy Guarantee Note */}
           <div style={{
-            background: 'rgba(6, 182, 212, 0.08)',
-            border: '1px solid rgba(6, 182, 212, 0.25)',
-            borderRadius: 12,
-            padding: '1rem',
             display: 'flex',
-            alignItems: 'flex-start',
+            alignItems: 'center',
             gap: 10,
-            fontSize: '0.82rem',
+            background: 'var(--neptune-bg-elevated)',
+            border: '1px solid var(--neptune-border-card)',
+            borderRadius: 10,
+            padding: '0.75rem 1rem',
+            fontSize: '0.78rem',
             color: 'var(--neptune-text-secondary)',
-            lineHeight: 1.45,
           }}>
-            <Clock size={18} style={{ color: 'var(--neptune-cyan)', flexShrink: 0, marginTop: 2 }} />
+            <Shield size={18} style={{ color: 'var(--neptune-emerald)', flexShrink: 0 }} />
             <div>
-              <strong style={{ color: 'var(--neptune-text-primary)' }}>Your Statutory 30-Day Guarantee:</strong> Under Section 7(1) of the RTI Act 2005, the department has strictly 30 days to furnish the requested records. If they fail, Section 7(6) makes all records completely <strong>100% FREE</strong>, and you can file a 1-tap legal First Appeal.
+              <strong>Avishek Goenka Whistleblower Shield:</strong> Your home address and phone number are safely masked to protect you from local harassment.
             </div>
           </div>
-
-          {/* Status update indicator if submitting */}
-          {statusMessage && (
-            <div style={{ fontSize: '0.82rem', color: 'var(--neptune-emerald-light)', display: 'flex', alignItems: 'center', gap: 8, padding: '0.5rem 0' }}>
-              <span className="status-dot emerald" />
-              <span>{statusMessage}</span>
-            </div>
-          )}
 
           {/* Action Navigation */}
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: '1rem', marginTop: '0.5rem', flexWrap: 'wrap' }}>
@@ -710,21 +627,21 @@ export const VoiceIntakeBox: React.FC = () => {
               style={{ display: 'flex', alignItems: 'center', gap: 6 }}
             >
               <ArrowLeft size={16} />
-              <span>Back to Questions</span>
+              <span>Back</span>
             </button>
 
             <button
               onClick={handleDispatch}
               disabled={isSubmitting}
               className="btn btn-primary btn-lg"
-              style={{ flex: 1, minWidth: 260, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 800 }}
+              style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 800, flex: 1, justifyContent: 'center' }}
             >
               {isSubmitting ? (
-                <span>Submitting & Sealing Proof...</span>
+                <span>{statusMessage || 'Processing...'}</span>
               ) : (
                 <>
-                  <span>Submit Application & Start 30-Day Clock</span>
-                  <ArrowRight size={18} />
+                  <Sparkles size={18} />
+                  <span>🚀 Seal & Launch 30-Day Statutory Clock</span>
                 </>
               )}
             </button>
