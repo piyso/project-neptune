@@ -9,6 +9,8 @@ import { DossierDetail } from './components/dossiers/DossierDetail.js';
 import { AuthoritySearch } from './components/cadastre/AuthoritySearch.js';
 import { MerkleVisualizer } from './components/vault/MerkleVisualizer.js';
 import { KioskTouchGrid } from './components/kiosk/KioskTouchGrid.js';
+import { CitizenHeroBanner } from './components/layout/CitizenHeroBanner.js';
+import { HelpGuideModal } from './components/layout/HelpGuideModal.js';
 import { offlineSyncEngine } from './services/indexedDbSync.js';
 import { WifiOff, Smartphone, Laptop, Monitor } from 'lucide-react';
 
@@ -45,7 +47,7 @@ export const App: React.FC = () => {
       case 'kiosk':
         return <KioskTouchGrid />;
       default:
-        return <DossierDetail />;
+        return <VoiceIntakeBox />;
     }
   };
 
@@ -78,40 +80,10 @@ export const App: React.FC = () => {
 
       {/* Main Content Workspace with Multi-Device Frame Emulation if selected */}
       <main className="main-content">
-        {surfaceMode === 'MOBILE_PWA' ? (
-          <div style={{
-            maxWidth: 420,
-            margin: '0 auto',
-            border: '8px solid #1e293b',
-            borderRadius: 36,
-            overflow: 'hidden',
-            boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
-            background: 'var(--neptune-bg-base)',
-            minHeight: '85vh',
-            display: 'flex',
-            flexDirection: 'column',
-          }}>
-            {/* Phone Notch */}
-            <div style={{
-              background: '#1e293b',
-              height: 24,
-              display: 'flex',
-              alignItems: 'center',
-              justifyContent: 'center',
-            }}>
-              <div style={{ width: 120, height: 12, background: '#0f172a', borderRadius: 10 }} />
-            </div>
+        {/* Welcoming Citizen Hero Onboarding Banner */}
+        <CitizenHeroBanner />
 
-            <div style={{ padding: '1rem', flex: 1, overflowY: 'auto' }}>
-              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-emerald-light)', marginBottom: 8, fontWeight: 700 }}>
-                📱 Mobile PWA Viewport (390px Natural Thumb Zone)
-              </div>
-              {renderCurrentView()}
-            </div>
-          </div>
-        ) : (
-          renderCurrentView()
-        )}
+        {renderCurrentView()}
       </main>
 
       {/* Global Cmd+K Command Dispatcher */}
@@ -119,6 +91,9 @@ export const App: React.FC = () => {
 
       {/* Privacy, Whistleblower Shield & Security Settings Modal */}
       <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
+
+      {/* Citizen Help & RTI Guide Modal */}
+      <HelpGuideModal />
     </div>
   );
 };

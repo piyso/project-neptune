@@ -166,18 +166,23 @@ export const VoiceIntakeBox: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Top Banner */}
       <div className="neptune-card neptune-card-glass" style={{ borderLeft: '4px solid var(--neptune-emerald)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Sparkles size={20} style={{ color: 'var(--neptune-emerald)' }} />
-              Zone 1: Plain Grievance to Section 2(f) Record Compiler
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Sparkles size={22} style={{ color: 'var(--neptune-emerald)' }} />
+              Draft Your RTI Application • अपनी आरटीआई तैयार करें
             </h2>
-            <p style={{ fontSize: '0.86rem', marginTop: 4 }}>
-              Speaks 12 Indic dialects. Deterministically transforms emotional citizen complaints into unassailable certified record demands.
+            <p style={{ fontSize: '0.88rem', color: 'var(--neptune-text-secondary)', marginTop: 4, lineHeight: 1.4 }}>
+              Explain your issue in your own words. Our legal engine automatically turns your complaint into certified record queries (Section 2(f)) that government officials are legally mandated to answer within 30 days.
             </p>
           </div>
-          <div className="badge badge-emerald">
-            100% Real Neuro-Symbolic Engine
+          <div style={{ display: 'flex', gap: 6, flexWrap: 'wrap' }}>
+            <span className="badge badge-emerald">
+              ⚖️ RTI Act 2005 Format
+            </span>
+            <span className="badge badge-cobalt">
+              🔒 Privacy Shielded
+            </span>
           </div>
         </div>
       </div>
@@ -187,9 +192,11 @@ export const VoiceIntakeBox: React.FC = () => {
         {/* Left Column: Voice & Grievance Input */}
         <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-            <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>1. Speak or Write Citizen Grievance</span>
-            <span className="badge badge-neutral" style={{ fontSize: '0.7rem' }}>
-              Lang: {language}
+            <span style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--neptune-text-primary)' }}>
+              1. Speak or Write Your Grievance (अपनी समस्या बताएं)
+            </span>
+            <span className="badge badge-neutral" style={{ fontSize: '0.72rem' }}>
+              Language: {language}
             </span>
           </div>
 
@@ -197,49 +204,49 @@ export const VoiceIntakeBox: React.FC = () => {
           <div style={{
             background: 'var(--neptune-bg-surface)',
             border: '1px solid var(--neptune-border-card)',
-            borderRadius: 12,
-            padding: '1rem',
+            borderRadius: 14,
+            padding: '1.1rem',
             display: 'flex',
             flexDirection: 'column',
             alignItems: 'center',
-            gap: '0.75rem',
+            gap: '0.85rem',
           }}>
             <canvas ref={canvasRef} width={420} height={48} className="waveform-canvas" />
 
-            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%' }}>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.78rem', color: 'var(--neptune-text-tertiary)' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', width: '100%', flexWrap: 'wrap', gap: 8 }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', fontSize: '0.8rem', color: 'var(--neptune-text-secondary)' }}>
                 <span className={`status-dot ${isRecording ? 'emerald' : ''}`} />
-                <span>{isRecording ? `Recording 16kHz PCM (00:${recordingSeconds.toString().padStart(2, '0')})` : 'Microphone Ready (Silero WASM VAD)'}</span>
+                <span>{isRecording ? `Recording voice (00:${recordingSeconds.toString().padStart(2, '0')})... बोलिए` : 'Microphone Ready • बोलकर बताएं'}</span>
               </div>
 
               <button
                 onClick={handleToggleRecording}
                 className={`btn ${isRecording ? 'btn-danger' : 'btn-primary'} btn-sm`}
-                style={{ borderRadius: 20 }}
+                style={{ borderRadius: 20, padding: '0.4rem 1rem', fontWeight: 700 }}
               >
-                {isRecording ? <><MicOff size={14} /> Stop Dictation</> : <><Mic size={14} /> Hold to Speak</>}
+                {isRecording ? <><MicOff size={15} /> Stop Recording</> : <><Mic size={15} /> Hold to Speak (बोलें)</>}
               </button>
             </div>
           </div>
 
           {/* Category Selector Pills */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
-              Select Administrative Domain:
+            <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
+              Select Topic / समस्या का प्रकार:
             </label>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.45rem' }}>
               {[
-                { key: 'RATION_DELAY', label: '🌾 राशन (Ration/PDS)' },
+                { key: 'RATION_DELAY', label: '🌾 राशन (Ration / PDS)' },
                 { key: 'ROAD_POTHOLE', label: '🛣️ सड़क (Roads & PWD)' },
-                { key: 'PENSION_DELAY', label: '👵 पेंशन (Pension/EPFO)' },
-                { key: 'LAND_RECORDS', label: '🚜 भूमि (Land & Mutation)' },
+                { key: 'PENSION_DELAY', label: '👵 पेंशन (Pension / EPFO)' },
+                { key: 'LAND_RECORDS', label: '🚜 जमीन (Land & Mutation)' },
                 { key: 'POLICE_FIR', label: '👮 पुलिस (Police FIR)' },
               ].map(cat => (
                 <button
                   key={cat.key}
                   onClick={() => setCategoryKey(cat.key)}
                   className={`btn btn-sm ${categoryKey === cat.key ? 'btn-primary' : 'btn-secondary'}`}
-                  style={{ fontSize: '0.75rem', padding: '0.35rem 0.65rem' }}
+                  style={{ fontSize: '0.78rem', padding: '0.4rem 0.75rem', fontWeight: 600 }}
                 >
                   {cat.label}
                 </button>
@@ -249,28 +256,30 @@ export const VoiceIntakeBox: React.FC = () => {
 
           {/* Grievance Narrative Textarea */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
-              Plain Citizen Narrative:
+            <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
+              Describe what happened in plain words (अपनी समस्या लिखें):
             </label>
             <textarea
               className="textarea-field"
               value={grievanceText}
               onChange={(e) => setGrievanceText(e.target.value)}
               placeholder="वर्णन करें: क्या समस्या है, किस विभाग में और कब से रुकी हुई है..."
+              rows={4}
+              style={{ fontSize: '0.9rem', lineHeight: 1.5 }}
             />
           </div>
 
           {/* Reference Identifier Input */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
-              File Reference / PPO / Roll / Card No (Optional):
+            <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
+              Card No. / Application No. / File Reference (यदि कोई हो):
             </label>
             <input
               type="text"
               className="input-field"
               value={specificId}
               onChange={(e) => setSpecificId(e.target.value)}
-              placeholder="e.g. DL/CPM/49102 or RC/2026/9102"
+              placeholder="e.g. Ration Card No, Pension PPO, or complaint number"
             />
           </div>
 
@@ -278,17 +287,17 @@ export const VoiceIntakeBox: React.FC = () => {
           <div style={{
             display: 'flex',
             alignItems: 'center',
-            gap: '0.65rem',
+            gap: '0.75rem',
             background: 'rgba(16, 185, 129, 0.08)',
             border: '1px solid rgba(16, 185, 129, 0.25)',
-            borderRadius: 8,
-            padding: '0.65rem 0.85rem',
-            fontSize: '0.78rem',
+            borderRadius: 10,
+            padding: '0.75rem 1rem',
+            fontSize: '0.8rem',
             color: 'var(--neptune-text-secondary)',
           }}>
-            <Shield size={18} style={{ color: 'var(--neptune-emerald)', flexShrink: 0 }} />
+            <Shield size={20} style={{ color: 'var(--neptune-emerald)', flexShrink: 0 }} />
             <div>
-              <strong style={{ color: 'var(--neptune-emerald-light)' }}>DPDP Act 2023 Shield Active:</strong> Citizen Aadhaar numbers and personal phone numbers are automatically masked (Verhoeff checksum).
+              <strong style={{ color: 'var(--neptune-emerald-light)' }}>100% Privacy Protected:</strong> Personal details like Aadhaar and mobile numbers are automatically masked before any officer sees them.
             </div>
           </div>
         </div>
@@ -296,7 +305,9 @@ export const VoiceIntakeBox: React.FC = () => {
         {/* Right Column: Live Section 2(f) Query Blocks & Submission Channels */}
         <div className="neptune-card" style={{ display: 'flex', flexDirection: 'column', gap: '1.2rem' }}>
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 6 }}>
-            <span style={{ fontWeight: 700, fontSize: '0.95rem' }}>2. Certified Section 2(f) Query Blocks</span>
+            <span style={{ fontWeight: 800, fontSize: '0.98rem', color: 'var(--neptune-text-primary)' }}>
+              2. Official RTI Questions (अधिकारी के पास जाने वाले प्रश्न)
+            </span>
             <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
               <button
                 onClick={() => {
@@ -310,15 +321,31 @@ export const VoiceIntakeBox: React.FC = () => {
                   }
                 }}
                 className="btn btn-secondary btn-sm"
-                style={{ padding: '0.2rem 0.5rem', fontSize: '0.72rem', display: 'flex', alignItems: 'center', gap: 4 }}
+                style={{ padding: '0.2rem 0.6rem', fontSize: '0.74rem', display: 'flex', alignItems: 'center', gap: 4 }}
               >
-                {isSpeakingDraft ? <VolumeX size={13} /> : <Volume2 size={13} />}
-                <span>{isSpeakingDraft ? 'Stop Audio' : '🔊 Listen Draft'}</span>
+                {isSpeakingDraft ? <VolumeX size={14} /> : <Volume2 size={14} />}
+                <span>{isSpeakingDraft ? 'Stop Audio' : '🔊 Listen (सुनें)'}</span>
               </button>
               <span className={`badge ${compilationResult.isWordBudgetCompliant ? 'badge-emerald' : 'badge-amber'}`}>
-                {compilationResult.totalCharacterCount} / 2,800 Chars Safe
+                {compilationResult.totalCharacterCount} / 2,800 Chars
               </span>
             </div>
+          </div>
+
+          {/* Friendly explainer note */}
+          <div style={{
+            background: 'rgba(6, 182, 212, 0.08)',
+            border: '1px solid rgba(6, 182, 212, 0.25)',
+            borderRadius: 8,
+            padding: '0.6rem 0.85rem',
+            fontSize: '0.78rem',
+            color: 'var(--neptune-text-secondary)',
+            display: 'flex',
+            alignItems: 'center',
+            gap: 6,
+          }}>
+            <span>💡</span>
+            <span><strong>Why these questions?</strong> Under RTI Section 2(f), officials cannot give oral excuses—they are legally bound to hand over certified copies of records within 30 days.</span>
           </div>
 
           {/* Target Public Authority Card */}
@@ -329,7 +356,7 @@ export const VoiceIntakeBox: React.FC = () => {
             padding: '0.75rem 1rem',
           }}>
             <div style={{ fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--neptune-text-tertiary)', fontWeight: 700 }}>
-              Auto-Resolved Custodian Authority
+              Target Department & Office (संबंधित सरकारी कार्यालय)
             </div>
             <div style={{ fontSize: '0.95rem', fontWeight: 700, color: 'var(--neptune-text-primary)', marginTop: 2 }}>
               {targetAuthority.canonicalName}
@@ -340,7 +367,7 @@ export const VoiceIntakeBox: React.FC = () => {
           </div>
 
           {/* Compiled Query Blocks */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: 280, overflowY: 'auto' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem', maxHeight: 260, overflowY: 'auto' }}>
             {compilationResult.queryBlocks.map((block) => (
               <div
                 key={block.id}
@@ -353,17 +380,13 @@ export const VoiceIntakeBox: React.FC = () => {
               >
                 <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: 4 }}>
                   <span className="badge badge-cobalt" style={{ fontSize: '0.68rem' }}>
-                    Point {block.pointNumber} • {block.recordType}
+                    Question #{block.pointNumber}
                   </span>
-                  <div style={{ display: 'flex', gap: '0.3rem' }}>
-                    {block.preemptedClauses.map(c => (
-                      <span key={c} className="badge badge-emerald" style={{ fontSize: '0.62rem' }}>
-                        Sec {c} Shield
-                      </span>
-                    ))}
-                  </div>
+                  <span className="badge badge-emerald" style={{ fontSize: '0.62rem' }}>
+                    ✓ Protected by Law
+                  </span>
                 </div>
-                <div style={{ fontSize: '0.84rem', color: 'var(--neptune-text-primary)', lineHeight: 1.45 }}>
+                <div style={{ fontSize: '0.85rem', color: 'var(--neptune-text-primary)', lineHeight: 1.45 }}>
                   {block.certifiedQueryText}
                 </div>
               </div>
@@ -372,8 +395,8 @@ export const VoiceIntakeBox: React.FC = () => {
 
           {/* Submission Channel Selection */}
           <div>
-            <label style={{ fontSize: '0.78rem', fontWeight: 600, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
-              3. Select Official Submission Pathway:
+            <label style={{ fontSize: '0.82rem', fontWeight: 700, color: 'var(--neptune-text-secondary)', display: 'block', marginBottom: 6 }}>
+              3. Choose How to Send Your RTI (जमा करने का तरीका):
             </label>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr', gap: '0.5rem' }}>
               {/* Channel 1: Cloud */}
@@ -394,8 +417,8 @@ export const VoiceIntakeBox: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <Send size={18} style={{ color: 'var(--neptune-emerald)' }} />
                   <div>
-                    <div style={{ fontSize: '0.86rem', fontWeight: 700 }}>1-Tap Online NIC Submission (₹10)</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-secondary)' }}>Automated registration on rtionline.gov.in with Bharatkosh handoff</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>🌐 Send Online via NIC Portal (₹10 Statutory Fee)</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-secondary)' }}>Instant e-filing with official government registration number</div>
                   </div>
                 </div>
                 <CheckCircle2 size={16} style={{ color: selectedChannel === 'CENTRAL_ONLINE' ? 'var(--neptune-emerald)' : 'transparent' }} />
@@ -419,8 +442,8 @@ export const VoiceIntakeBox: React.FC = () => {
                 <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
                   <Truck size={18} style={{ color: 'var(--neptune-amber)' }} />
                   <div>
-                    <div style={{ fontSize: '0.86rem', fontWeight: 700 }}>Doorstep Registered Speed Post (₹39)</div>
-                    <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-secondary)' }}>Pre-printed Form 'A' + ₹10 Physical IPO Escrow + CEPT Tracking Barcode</div>
+                    <div style={{ fontSize: '0.88rem', fontWeight: 700 }}>📮 Send by Registered Speed Post (₹39 All-Inclusive)</div>
+                    <div style={{ fontSize: '0.72rem', color: 'var(--neptune-text-secondary)' }}>We print Form 'A', attach ₹10 Postal Order (IPO), and mail it with tracking barcode</div>
                   </div>
                 </div>
                 <CheckCircle2 size={16} style={{ color: selectedChannel === 'OFFLINE_SPEED_POST' ? 'var(--neptune-emerald)' : 'transparent' }} />
@@ -440,13 +463,13 @@ export const VoiceIntakeBox: React.FC = () => {
             onClick={handleDispatch}
             disabled={isSubmitting}
             className="btn btn-primary btn-lg"
-            style={{ width: '100%', marginTop: 'auto' }}
+            style={{ width: '100%', marginTop: 'auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 8, fontWeight: 700 }}
           >
             {isSubmitting ? (
-              <span>Sealing with BSA 2023 Merkle Root...</span>
+              <span>Submitting and sealing proof in vault...</span>
             ) : (
               <>
-                <span>Commit Dossier & Launch 30-Day Statutory Clock</span>
+                <span>Submit RTI & Start 30-Day Response Clock</span>
                 <ArrowRight size={18} />
               </>
             )}

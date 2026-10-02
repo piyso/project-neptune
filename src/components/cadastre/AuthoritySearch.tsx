@@ -24,14 +24,14 @@ export const AuthoritySearch: React.FC = () => {
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Top Banner */}
       <div className="neptune-card neptune-card-glass" style={{ borderLeft: '4px solid var(--neptune-cobalt)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Landmark size={20} style={{ color: 'var(--neptune-cobalt)' }} />
-              Zone 3: Cadastre & Public Authority Master Directory
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Landmark size={22} style={{ color: 'var(--neptune-cobalt-light)' }} />
+              Government Departments & CPIO Directory • सरकारी विभाग निर्देशिका
             </h2>
-            <p style={{ fontSize: '0.86rem', marginTop: 4 }}>
-              Allocation of Business Rules 1961 (AoBR) Trie & Local Government Directory (LGD). Covers 94 Central Ministries and 2,826 Public Authorities.
+            <p style={{ fontSize: '0.88rem', color: 'var(--neptune-text-secondary)', marginTop: 4, lineHeight: 1.4 }}>
+              Search 2,800+ Central and State Ministries, public authorities, and their designated Public Information Officers (CPIOs). Check official office addresses, response speeds, and compliance history.
             </p>
           </div>
           <span className="badge badge-cobalt">
@@ -49,7 +49,7 @@ export const AuthoritySearch: React.FC = () => {
             className="input-field"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
-            placeholder="Search Ministry, Authority name, Hindi title, or Pincode..."
+            placeholder="Search Ministry name (e.g. NHAI, EPFO, Railways, PDS), Hindi title, or PIN code..."
           />
         </div>
 

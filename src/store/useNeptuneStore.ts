@@ -6,10 +6,12 @@ import { NeptuneApiClient } from '../services/api.js';
 export type SurfaceMode = 'DESKTOP_LITIGATION' | 'MOBILE_PWA' | 'CSC_KIOSK' | 'EXTENSION_SIDEPANEL';
 export type AppView = 'intake' | 'dossiers' | 'cadastre' | 'vault' | 'kiosk';
 export type IndicLanguage = 'HINDI' | 'ENGLISH' | 'BHOJPURI' | 'TAMIL' | 'BENGALI' | 'MARATHI';
+export type UserMode = 'CITIZEN' | 'ADVOCATE';
 
 export interface NeptuneState {
   currentView: AppView;
   surfaceMode: SurfaceMode;
+  userMode: UserMode;
   theme: 'dark' | 'sunlight';
   language: IndicLanguage;
   dossiers: ICitizenRTIDossier[];
@@ -17,6 +19,7 @@ export interface NeptuneState {
   authorities: IPublicAuthorityNode[];
   isOmnibarOpen: boolean;
   isSettingsOpen: boolean;
+  isHelpOpen: boolean;
   isKanbanView: boolean;
   isNoticeScannerOpen: boolean;
   isLogisticsOpen: boolean;
@@ -24,12 +27,13 @@ export interface NeptuneState {
   backendStatus: 'STANDALONE_LOCAL' | 'LIVE_CONNECTED';
 }
 
-const STORAGE_KEY = 'neptune_prod_state_v1';
+const STORAGE_KEY = 'neptune_prod_state_v2';
 
 // Initial state
 const defaultState: NeptuneState = {
-  currentView: 'dossiers',
+  currentView: 'intake',
   surfaceMode: 'DESKTOP_LITIGATION',
+  userMode: 'CITIZEN',
   theme: 'dark',
   language: 'HINDI',
   dossiers: INITIAL_DOSSIERS,
@@ -37,6 +41,7 @@ const defaultState: NeptuneState = {
   authorities: INITIAL_PUBLIC_AUTHORITIES,
   isOmnibarOpen: false,
   isSettingsOpen: false,
+  isHelpOpen: false,
   isKanbanView: false,
   isNoticeScannerOpen: false,
   isLogisticsOpen: false,
@@ -50,7 +55,7 @@ let globalState: NeptuneState = (() => {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const parsed = JSON.parse(raw);
-      return { ...defaultState, ...parsed, isOmnibarOpen: false };
+      return { ...defaultState, ...parsed, isOmnibarOpen: false, isHelpOpen: false };
     }
   } catch (e) {
     console.warn('[NeptuneStore] Failed to load local storage state:', e);
@@ -175,15 +180,27 @@ export function useNeptuneStore() {
     notify();
   };
 
+  const setUserMode = (mode: UserMode) => {
+    globalState = { ...globalState, userMode: mode };
+    notify();
+  };
+
+  const setHelpOpen = (isOpen: boolean) => {
+    globalState = { ...globalState, isHelpOpen: isOpen };
+    notify();
+  };
+
   return {
     ...state,
     setView,
     setSurfaceMode,
+    setUserMode,
     toggleTheme,
     setLanguage,
     selectDossier,
     setOmnibarOpen,
     setSettingsOpen,
+    setHelpOpen,
     setKanbanView,
     setNoticeScannerOpen,
     setLogisticsOpen,

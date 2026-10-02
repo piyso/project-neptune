@@ -63,33 +63,51 @@ STATUS: SECURE • COURT ADMISSIBLE IN ALL HIGH COURTS AND APEX COURT`;
     <div style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem' }}>
       {/* Top Banner */}
       <div className="neptune-card neptune-card-glass" style={{ borderLeft: '4px solid var(--neptune-emerald)' }}>
-        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
+        <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.75rem' }}>
           <div>
-            <h2 style={{ fontSize: '1.25rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-              <Shield size={20} style={{ color: 'var(--neptune-emerald)' }} />
-              Zone 4: BSA 2023 §63 Cryptographic Evidence Vault
+            <h2 style={{ fontSize: '1.3rem', fontWeight: 800, display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <Shield size={22} style={{ color: 'var(--neptune-emerald)' }} />
+              Legal Proof & Evidence Vault • कानूनी सबूत व डिजिटल प्रमाण
             </h2>
-            <p style={{ fontSize: '0.86rem', marginTop: 4 }}>
-              Generates RFC 3161 tamper-proof Merkle trees and digitally signed certificates admissible in High Courts and the Supreme Court under Section 63 of Bharatiya Sakshya Adhiniyam, 2023.
+            <p style={{ fontSize: '0.88rem', color: 'var(--neptune-text-secondary)', marginTop: 4, lineHeight: 1.4 }}>
+              Under Section 63 of India's Bharatiya Sakshya Adhiniyam (BSA) 2023, every RTI is sealed with a court-admissible digital fingerprint. This legally guarantees that government departments cannot claim they never received your application.
             </p>
           </div>
-          <button onClick={handleDownloadCert} className="btn btn-primary btn-sm">
+          <button onClick={handleDownloadCert} className="btn btn-primary btn-sm" style={{ fontWeight: 700 }}>
             <Download size={15} />
-            <span>Export Signed BSA Certificate</span>
+            <span>Export Court-Admissible Certificate</span>
           </button>
+        </div>
+      </div>
+
+      {/* Explainer callout note */}
+      <div style={{
+        background: 'rgba(16, 185, 129, 0.08)',
+        border: '1px solid rgba(16, 185, 129, 0.25)',
+        borderRadius: 12,
+        padding: '0.85rem 1.1rem',
+        display: 'flex',
+        alignItems: 'center',
+        gap: 10,
+        fontSize: '0.82rem',
+        color: 'var(--neptune-text-secondary)',
+      }}>
+        <span style={{ fontSize: '1.2rem' }}>💡</span>
+        <div>
+          <strong style={{ color: 'var(--neptune-emerald-light)' }}>How does this protect you in court?</strong> When you file an RTI, our engine locks a mathematical fingerprint (Merkle hash) of your voice, the exact questions filed, and the government's official server receipt. If officials ever deny receipt before an Information Commissioner or High Court, this certificate provides 100% admissible legal proof.
         </div>
       </div>
 
       {/* Case Selector Strip */}
       <div className="neptune-card" style={{ padding: '0.75rem 1rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '0.5rem' }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--neptune-text-secondary)' }}>Selected Filing:</span>
+          <span style={{ fontSize: '0.8rem', fontWeight: 600, color: 'var(--neptune-text-secondary)' }}>Selected Case:</span>
           <span style={{ fontSize: '0.86rem', fontWeight: 700, color: 'var(--neptune-text-primary)' }}>
             {currentDossier.title} ({currentDossier.govRegistrationNumber || currentDossier.postalBarcode})
           </span>
         </div>
         <span className="badge badge-emerald">
-          Status: {cert.status}
+          Proof Status: {cert.status}
         </span>
       </div>
 

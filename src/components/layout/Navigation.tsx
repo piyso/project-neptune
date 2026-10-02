@@ -7,12 +7,12 @@ export const Navigation: React.FC = () => {
 
   const overdueCount = dossiers.filter(d => d.statutoryClock.isOverdue).length;
 
-  const navItems: Array<{ id: AppView; label: string; icon: React.ReactNode; badge?: number | string }> = [
-    { id: 'intake', label: '1. Ingestion & Compiler', icon: <Mic size={17} /> },
-    { id: 'dossiers', label: '2. Case Queue & SLA', icon: <FolderKanban size={17} />, badge: overdueCount > 0 ? `${overdueCount} Breach` : dossiers.length },
-    { id: 'cadastre', label: '3. Cadastre & CPIOs', icon: <Landmark size={17} /> },
-    { id: 'vault', label: '4. BSA §63 Evidence', icon: <KeySquare size={17} /> },
-    { id: 'kiosk', label: '5. CSC Assisted Kiosk', icon: <Monitor size={17} /> },
+  const navItems: Array<{ id: AppView; label: string; subLabel: string; icon: React.ReactNode; badge?: number | string }> = [
+    { id: 'intake', label: 'Draft RTI', subLabel: 'शिकायत दर्ज करें', icon: <Mic size={17} /> },
+    { id: 'dossiers', label: 'Track Cases', subLabel: 'समय सीमा व स्थिति', icon: <FolderKanban size={17} />, badge: overdueCount > 0 ? `${overdueCount} Overdue` : dossiers.length },
+    { id: 'cadastre', label: 'Govt Directory', subLabel: 'सरकारी विभाग', icon: <Landmark size={17} /> },
+    { id: 'vault', label: 'Legal Proof Vault', subLabel: 'सबूत व सर्टिफिकेट', icon: <KeySquare size={17} /> },
+    { id: 'kiosk', label: 'Simple Touch Kiosk', subLabel: 'आसान मोड', icon: <Monitor size={17} /> },
   ];
 
   return (
@@ -42,10 +42,10 @@ export const Navigation: React.FC = () => {
                   background: isActive ? 'var(--neptune-bg-card)' : 'transparent',
                   color: isActive ? 'var(--neptune-emerald-light)' : 'var(--neptune-text-secondary)',
                   borderBottom: isActive ? '2px solid var(--neptune-emerald)' : '2px solid transparent',
-                  padding: '0.75rem 1.1rem',
+                  padding: '0.6rem 1rem',
                   display: 'flex',
                   alignItems: 'center',
-                  gap: '0.5rem',
+                  gap: '0.55rem',
                   fontSize: '0.86rem',
                   fontWeight: isActive ? 700 : 500,
                   cursor: 'pointer',
@@ -54,9 +54,14 @@ export const Navigation: React.FC = () => {
                 }}
               >
                 {item.icon}
-                <span>{item.label}</span>
+                <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textAlign: 'left' }}>
+                  <span style={{ lineHeight: 1.2 }}>{item.label}</span>
+                  <span style={{ fontSize: '0.68rem', color: isActive ? 'var(--neptune-emerald)' : 'var(--neptune-text-tertiary)', fontWeight: 500 }}>
+                    {item.subLabel}
+                  </span>
+                </div>
                 {item.badge && (
-                  <span className={`badge ${typeof item.badge === 'string' && item.badge.includes('Breach') ? 'badge-crimson' : 'badge-neutral'}`} style={{ fontSize: '0.7rem' }}>
+                  <span className={`badge ${typeof item.badge === 'string' && item.badge.includes('Overdue') ? 'badge-crimson' : 'badge-neutral'}`} style={{ fontSize: '0.7rem', marginLeft: 4 }}>
                     {item.badge}
                   </span>
                 )}
@@ -104,7 +109,7 @@ export const Navigation: React.FC = () => {
                 }}
               >
                 {item.icon}
-                <span>{item.label.split('.')[1]?.trim().split(' ')[0]}</span>
+                <span>{item.label}</span>
               </button>
             );
           })}
