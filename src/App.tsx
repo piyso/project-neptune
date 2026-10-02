@@ -1,0 +1,124 @@
+import React, { useEffect } from 'react';
+import { useNeptuneStore } from './store/useNeptuneStore.js';
+import { Header } from './components/layout/Header.js';
+import { Navigation } from './components/layout/Navigation.js';
+import { OmnibarModal } from './components/layout/OmnibarModal.js';
+import { SettingsModal } from './components/settings/SettingsModal.js';
+import { VoiceIntakeBox } from './components/intake/VoiceIntakeBox.js';
+import { DossierDetail } from './components/dossiers/DossierDetail.js';
+import { AuthoritySearch } from './components/cadastre/AuthoritySearch.js';
+import { MerkleVisualizer } from './components/vault/MerkleVisualizer.js';
+import { KioskTouchGrid } from './components/kiosk/KioskTouchGrid.js';
+import { offlineSyncEngine } from './services/indexedDbSync.js';
+import { WifiOff, Smartphone, Laptop, Monitor } from 'lucide-react';
+
+export const App: React.FC = () => {
+  const { currentView, surfaceMode, setSurfaceMode, isSettingsOpen, setSettingsOpen } = useNeptuneStore();
+  const [isOnline, setIsOnline] = React.useState(navigator.onLine);
+
+  useEffect(() => {
+    offlineSyncEngine.init();
+
+    const handleOnline = () => {
+      setIsOnline(true);
+      offlineSyncEngine.flushQueue();
+    };
+    const handleOffline = () => setIsOnline(false);
+    window.addEventListener('online', handleOnline);
+    window.addEventListener('offline', handleOffline);
+    return () => {
+      window.removeEventListener('online', handleOnline);
+      window.removeEventListener('offline', handleOffline);
+    };
+  }, []);
+
+  const renderCurrentView = () => {
+    switch (currentView) {
+      case 'intake':
+        return <VoiceIntakeBox />;
+      case 'dossiers':
+        return <DossierDetail />;
+      case 'cadastre':
+        return <AuthoritySearch />;
+      case 'vault':
+        return <MerkleVisualizer />;
+      case 'kiosk':
+        return <KioskTouchGrid />;
+      default:
+        return <DossierDetail />;
+    }
+  };
+
+  return (
+    <div className="app-container">
+      {/* Offline Brownout Banner */}
+      {!isOnline && (
+        <div style={{
+          background: 'var(--neptune-amber)',
+          color: '#000',
+          padding: '0.4rem 1rem',
+          textAlign: 'center',
+          fontSize: '0.78rem',
+          fontWeight: 700,
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          gap: 6,
+        }}>
+          <WifiOff size={14} />
+          <span>OFFLINE BROWNOUT MODE ACTIVE • All inputs, audio waveforms, and dossiers are safely cached in local storage.</span>
+        </div>
+      )}
+
+      {/* Sovereign Header */}
+      <Header />
+
+      {/* Surface Navigation */}
+      <Navigation />
+
+      {/* Main Content Workspace with Multi-Device Frame Emulation if selected */}
+      <main className="main-content">
+        {surfaceMode === 'MOBILE_PWA' ? (
+          <div style={{
+            maxWidth: 420,
+            margin: '0 auto',
+            border: '8px solid #1e293b',
+            borderRadius: 36,
+            overflow: 'hidden',
+            boxShadow: '0 25px 60px -15px rgba(0, 0, 0, 0.7)',
+            background: 'var(--neptune-bg-base)',
+            minHeight: '85vh',
+            display: 'flex',
+            flexDirection: 'column',
+          }}>
+            {/* Phone Notch */}
+            <div style={{
+              background: '#1e293b',
+              height: 24,
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+            }}>
+              <div style={{ width: 120, height: 12, background: '#0f172a', borderRadius: 10 }} />
+            </div>
+
+            <div style={{ padding: '1rem', flex: 1, overflowY: 'auto' }}>
+              <div style={{ fontSize: '0.72rem', color: 'var(--neptune-emerald-light)', marginBottom: 8, fontWeight: 700 }}>
+                📱 Mobile PWA Viewport (390px Natural Thumb Zone)
+              </div>
+              {renderCurrentView()}
+            </div>
+          </div>
+        ) : (
+          renderCurrentView()
+        )}
+      </main>
+
+      {/* Global Cmd+K Command Dispatcher */}
+      <OmnibarModal />
+
+      {/* Privacy, Whistleblower Shield & Security Settings Modal */}
+      <SettingsModal isOpen={isSettingsOpen} onClose={() => setSettingsOpen(false)} />
+    </div>
+  );
+};

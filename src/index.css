@@ -1,0 +1,498 @@
+/* ==========================================================================
+   PROJECT NEPTUNE: SOVEREIGN CIVIC DESIGN SYSTEM & DESIGN TOKENS
+   Theme: Obsidian Sovereign Dark & Ultra-Contrast Sunlight Mode
+   ========================================================================== */
+
+:root {
+  /* Surface Color Palette (Obsidian Sovereign Dark) */
+  --neptune-bg-base: #07090e;
+  --neptune-bg-surface: #0b0f19;
+  --neptune-bg-card: #0f172a;
+  --neptune-bg-card-hover: #162038;
+  --neptune-bg-elevated: #1e293b;
+  --neptune-bg-glass: rgba(15, 23, 42, 0.82);
+  --neptune-bg-glass-active: rgba(30, 41, 59, 0.90);
+  
+  /* Borders */
+  --neptune-border-subtle: rgba(51, 65, 85, 0.4);
+  --neptune-border-card: #1e293b;
+  --neptune-border-hover: #334155;
+  --neptune-border-active: #10b981;
+  --neptune-border-gold: rgba(245, 158, 11, 0.4);
+
+  /* Text & Contrast Hierarchy (WCAG AAA compliant) */
+  --neptune-text-primary: #f8fafc;
+  --neptune-text-secondary: #94a3b8;
+  --neptune-text-tertiary: #64748b;
+  --neptune-text-muted: #475569;
+  --neptune-text-inverse: #07090e;
+
+  /* Quasi-Judicial Statutory State Accents */
+  --neptune-emerald: #10b981;
+  --neptune-emerald-glow: rgba(16, 185, 129, 0.22);
+  --neptune-emerald-light: #34d399;
+  --neptune-emerald-dark: #065f46;
+
+  --neptune-amber: #f59e0b;
+  --neptune-amber-glow: rgba(245, 158, 11, 0.22);
+  --neptune-amber-light: #fbbf24;
+
+  --neptune-crimson: #ef4444;
+  --neptune-crimson-glow: rgba(239, 68, 68, 0.22);
+  --neptune-crimson-light: #f87171;
+
+  --neptune-cobalt: #3b82f6;
+  --neptune-cobalt-glow: rgba(59, 130, 246, 0.22);
+  --neptune-cyan: #06b6d4;
+  --neptune-purple: #8b5cf6;
+
+  /* Typography Stacks */
+  --neptune-font-sans: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --neptune-font-indic: 'Noto Sans Devanagari', 'Plus Jakarta Sans', sans-serif;
+  --neptune-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+
+  /* Elevation & Shadows */
+  --neptune-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --neptune-shadow-md: 0 4px 12px -2px rgba(0, 0, 0, 0.5);
+  --neptune-shadow-lg: 0 12px 32px -4px rgba(0, 0, 0, 0.6);
+  --neptune-shadow-emerald: 0 0 24px -2px rgba(16, 185, 129, 0.35);
+  --neptune-shadow-amber: 0 0 24px -2px rgba(245, 158, 11, 0.35);
+  --neptune-shadow-crimson: 0 0 24px -2px rgba(239, 68, 68, 0.35);
+
+  /* Transitions & Animation Curves */
+  --neptune-transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  --neptune-transition-slow: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --------------------------------------------------------------------------
+   HIGH-CONTRAST SUNLIGHT OUTDOOR MODE (>100,000 LUX VILLAGE READABILITY)
+   -------------------------------------------------------------------------- */
+[data-theme="sunlight"] {
+  --neptune-bg-base: #ffffff;
+  --neptune-bg-surface: #f8fafc;
+  --neptune-bg-card: #ffffff;
+  --neptune-bg-card-hover: #f1f5f9;
+  --neptune-bg-elevated: #e2e8f0;
+  --neptune-bg-glass: #ffffff;
+  --neptune-bg-glass-active: #f8fafc;
+
+  --neptune-border-subtle: #94a3b8;
+  --neptune-border-card: #0f172a;
+  --neptune-border-hover: #000000;
+  --neptune-border-active: #047857;
+
+  --neptune-text-primary: #000000;
+  --neptune-text-secondary: #0f172a;
+  --neptune-text-tertiary: #334155;
+  --neptune-text-muted: #475569;
+  --neptune-text-inverse: #ffffff;
+
+  --neptune-emerald: #047857;
+  --neptune-emerald-glow: rgba(4, 120, 87, 0.2);
+  --neptune-amber: #b45309;
+  --neptune-amber-glow: rgba(180, 83, 9, 0.2);
+  --neptune-crimson: #b91c1c;
+  --neptune-crimson-glow: rgba(185, 28, 28, 0.2);
+  --neptune-cobalt: #1d4ed8;
+
+  --neptune-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --neptune-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.15);
+  --neptune-shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.2);
+}
+
+/* --------------------------------------------------------------------------
+   GLOBAL RESET & BASE STYLES
+   -------------------------------------------------------------------------- */
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html, body {
+  width: 100%;
+  min-height: 100%;
+  background-color: var(--neptune-bg-base);
+  color: var(--neptune-text-primary);
+  font-family: var(--neptune-font-sans);
+  font-size: 15px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  overflow-x: hidden;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: var(--neptune-bg-base);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--neptune-bg-elevated);
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--neptune-border-hover);
+}
+
+/* Typography elements */
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  color: var(--neptune-text-primary);
+  letter-spacing: -0.02em;
+  line-height: 1.25;
+}
+
+p {
+  color: var(--neptune-text-secondary);
+}
+
+code, pre {
+  font-family: var(--neptune-font-mono);
+}
+
+/* --------------------------------------------------------------------------
+   SOVEREIGN COMPONENT PRIMITIVES
+   -------------------------------------------------------------------------- */
+
+/* Layout Shell */
+.app-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  position: relative;
+  background: radial-gradient(circle at 50% 0%, rgba(16, 185, 129, 0.05) 0%, transparent 45%),
+              radial-gradient(circle at 100% 50%, rgba(59, 130, 246, 0.03) 0%, transparent 40%),
+              var(--neptune-bg-base);
+}
+
+.main-content {
+  flex: 1;
+  padding: 1.5rem;
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1rem 0.75rem 5.5rem 0.75rem; /* bottom padding for mobile thumb nav */
+  }
+}
+
+/* Card Surface */
+.neptune-card {
+  background: var(--neptune-bg-card);
+  border: 1px solid var(--neptune-border-card);
+  border-radius: 14px;
+  padding: 1.25rem;
+  box-shadow: var(--neptune-shadow-sm);
+  transition: var(--neptune-transition);
+  position: relative;
+  overflow: hidden;
+}
+
+.neptune-card:hover {
+  border-color: var(--neptune-border-hover);
+  box-shadow: var(--neptune-shadow-md);
+}
+
+.neptune-card-glass {
+  background: var(--neptune-bg-glass);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--neptune-border-card);
+}
+
+/* Interactive Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.15rem;
+  font-size: 0.88rem;
+  font-weight: 600;
+  border-radius: 10px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  transition: var(--neptune-transition);
+  user-select: none;
+  text-decoration: none;
+  white-space: nowrap;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(16, 185, 129, 0.35);
+}
+
+.btn-primary:hover {
+  background: linear-gradient(135deg, #34d399 0%, #10b981 100%);
+  box-shadow: var(--neptune-shadow-emerald);
+}
+
+.btn-secondary {
+  background: var(--neptune-bg-elevated);
+  border-color: var(--neptune-border-card);
+  color: var(--neptune-text-primary);
+}
+
+.btn-secondary:hover {
+  background: var(--neptune-border-hover);
+  color: #ffffff;
+}
+
+.btn-outline {
+  background: transparent;
+  border-color: var(--neptune-border-card);
+  color: var(--neptune-text-secondary);
+}
+
+.btn-outline:hover {
+  border-color: var(--neptune-emerald);
+  color: var(--neptune-emerald-light);
+  background: rgba(16, 185, 129, 0.08);
+}
+
+.btn-amber {
+  background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(245, 158, 11, 0.35);
+}
+
+.btn-amber:hover {
+  background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+  box-shadow: var(--neptune-shadow-amber);
+}
+
+.btn-danger {
+  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+  color: #ffffff;
+  box-shadow: 0 2px 10px rgba(239, 68, 68, 0.35);
+}
+
+.btn-danger:hover {
+  box-shadow: var(--neptune-shadow-crimson);
+}
+
+.btn-sm {
+  padding: 0.4rem 0.75rem;
+  font-size: 0.8rem;
+  border-radius: 8px;
+}
+
+.btn-lg {
+  padding: 0.85rem 1.6rem;
+  font-size: 1rem;
+  border-radius: 12px;
+}
+
+/* Badges & Pills */
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.25rem 0.65rem;
+  font-size: 0.75rem;
+  font-weight: 600;
+  border-radius: 9999px;
+  line-height: 1;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.badge-emerald {
+  background: rgba(16, 185, 129, 0.14);
+  color: var(--neptune-emerald-light);
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.badge-amber {
+  background: rgba(245, 158, 11, 0.14);
+  color: var(--neptune-amber-light);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.badge-crimson {
+  background: rgba(239, 68, 68, 0.14);
+  color: var(--neptune-crimson-light);
+  border: 1px solid rgba(239, 68, 68, 0.3);
+}
+
+.badge-cobalt {
+  background: rgba(59, 130, 246, 0.14);
+  color: #93c5fd;
+  border: 1px solid rgba(59, 130, 246, 0.3);
+}
+
+.badge-neutral {
+  background: var(--neptune-bg-elevated);
+  color: var(--neptune-text-secondary);
+  border: 1px solid var(--neptune-border-card);
+}
+
+/* Pulsing Status Dot */
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+}
+
+.status-dot.emerald {
+  background-color: var(--neptune-emerald);
+  box-shadow: 0 0 8px var(--neptune-emerald);
+}
+
+.status-dot.amber {
+  background-color: var(--neptune-amber);
+  box-shadow: 0 0 8px var(--neptune-amber);
+  animation: pulse-amber 1.8s infinite;
+}
+
+.status-dot.crimson {
+  background-color: var(--neptune-crimson);
+  box-shadow: 0 0 8px var(--neptune-crimson);
+  animation: pulse-crimson 1.5s infinite;
+}
+
+@keyframes pulse-amber {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.5; transform: scale(1.15); }
+}
+
+@keyframes pulse-crimson {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.4; transform: scale(1.25); }
+}
+
+/* Statutory Stage Progress Bar */
+.progress-bar-container {
+  width: 100%;
+  height: 8px;
+  background: var(--neptune-bg-elevated);
+  border-radius: 9999px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 9999px;
+  transition: width 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* Modals & Dialogs */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(7, 9, 14, 0.85);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 1rem;
+  animation: fadeIn 0.2s ease-out;
+}
+
+.modal-content {
+  background: var(--neptune-bg-card);
+  border: 1px solid var(--neptune-border-card);
+  border-radius: 18px;
+  max-width: 680px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: var(--neptune-shadow-lg);
+  animation: slideUp 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(16px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* Form Inputs */
+.input-field {
+  width: 100%;
+  background: var(--neptune-bg-surface);
+  border: 1px solid var(--neptune-border-card);
+  color: var(--neptune-text-primary);
+  font-family: var(--neptune-font-sans);
+  font-size: 0.95rem;
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  outline: none;
+  transition: var(--neptune-transition);
+}
+
+.input-field:focus {
+  border-color: var(--neptune-emerald);
+  box-shadow: 0 0 0 3px var(--neptune-emerald-glow);
+}
+
+.textarea-field {
+  width: 100%;
+  background: var(--neptune-bg-surface);
+  border: 1px solid var(--neptune-border-card);
+  color: var(--neptune-text-primary);
+  font-family: var(--neptune-font-sans);
+  font-size: 0.95rem;
+  border-radius: 10px;
+  padding: 0.85rem 1rem;
+  outline: none;
+  resize: vertical;
+  min-height: 120px;
+  transition: var(--neptune-transition);
+}
+
+.textarea-field:focus {
+  border-color: var(--neptune-emerald);
+  box-shadow: 0 0 0 3px var(--neptune-emerald-glow);
+}
+
+/* 48px Tactile Touch Targets for CSC Rural Mode */
+.touch-target-48 {
+  min-height: 52px;
+  min-width: 52px;
+  touch-action: manipulation;
+}
+
+/* Esc/Pos Thermal Slip Styling */
+.thermal-slip {
+  font-family: 'JetBrains Mono', monospace;
+  background: #fff;
+  color: #000;
+  padding: 1.25rem;
+  border-radius: 4px;
+  border: 1px dashed #475569;
+  max-width: 320px;
+  margin: 0 auto;
+  font-size: 11px;
+  line-height: 1.4;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.25);
+}
+
+/* Audio Waveform Canvas */
+.waveform-canvas {
+  width: 100%;
+  height: 64px;
+  border-radius: 8px;
+  background: rgba(7, 9, 14, 0.6);
+}
